@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>账号格式化转换器 - Account Formatter Pro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-gradient-start: #0f172a;
+            --bg-gradient-end: #1e1b4b;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --primary-glow: rgba(99, 102, 241, 0.35);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --input-bg: rgba(15, 23, 42, 0.6);
+            --input-border: rgba(255, 255, 255, 0.12);
+            --input-focus: #818cf8;
+            --radius-lg: 16px;
+            --radius-md: 10px;
+            --shadow-glow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: radial-gradient(circle at 50% 20%, #1e1b4b 0%, #0f172a 70%, #090d16 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 860px;
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-glow);
+            padding: 36px 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .header h1 {
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #ffffff 0%, #c7d2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        /* 模式选择框 */
+        .mode-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+            background: rgba(15, 23, 42, 0.5);
+            padding: 6px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--card-border);
+        }
+
+        .mode-option {
+            position: relative;
+        }
+
+        .mode-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .mode-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-align: center;
+        }
+
+        .mode-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .mode-desc {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        .mode-option input[type="radio"]:checked + .mode-label {
+            background: var(--primary);
+            box-shadow: 0 4px 12px var(--primary-glow);
+        }
+
+        .mode-option input[type="radio"]:checked + .mode-label .mode-title {
+            color: #ffffff;
+        }
+
+        .mode-option input[type="radio"]:checked + .mode-label .mode-desc {
+            color: #e0e7ff;
+        }
+
+        /* 输入输出编辑区 */
+        .editor-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .editor-grid {
+                grid-template-columns: 1fr;
+            }
+            .mode-selector {
+                grid-template-columns: 1fr;
+            }
+            .container {
+                padding: 24px;
+            }
+        }
+
+        .field-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .field-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 240px;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: var(--radius-md);
+            padding: 14px;
+            color: var(--text-main);
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        textarea:focus {
+            border-color: var(--input-focus);
+            box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.15);
+        }
+
+        textarea::placeholder {
+            color: #475569;
+        }
+
+        /* 底部按钮 */
+        .btn-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: var(--radius-md);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, #4338ca 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 14px var(--primary-glow);
+        }
+
+        .btn-primary:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-main);
+            border: 1px solid var(--card-border);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.14);
+        }
+
+        .btn-success {
+            background: #10b981 !important;
+            color: #ffffff !important;
+        }
+
+        /* Toast 气泡弹窗 */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #10b981;
+            color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            pointer-events: none;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>⚡ 账号格式化转换器</h1>
+            <p>轻松实现文本批量清洗与标准重组</p>
+        </div>
+
+        <!-- 格式模式选择 -->
+        <div class="mode-selector">
+            <div class="mode-option">
+                <input type="radio" id="mode4" name="formatMode" value="4" checked onchange="autoConvert()">
+                <label for="mode4" class="mode-label">
+                    <span class="mode-title">4段式（含辅助邮箱）</span>
+                    <span class="mode-desc">账号----密码----辅助邮箱----2FA</span>
+                </label>
+            </div>
+            <div class="mode-option">
+                <input type="radio" id="mode3" name="formatMode" value="3" onchange="autoConvert()">
+                <label for="mode3" class="mode-label">
+                    <span class="mode-title">3段式（无辅助邮箱）</span>
+                    <span class="mode-desc">账号----密码----2FA</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- 编辑区 -->
+        <div class="editor-grid">
+            <div class="field-group">
+                <div class="field-label">
+                    <span>原始数据 (Input)</span>
+                    <span id="inputCount" style="font-size: 11px; opacity: 0.7;">0 条</span>
+                </div>
+                <textarea id="inputText" placeholder="粘贴原始文本，每行一条..." oninput="autoConvert()"></textarea>
+            </div>
+
+            <div class="field-group">
+                <div class="field-label">
+                    <span>转换结果 (Output)</span>
+                    <span id="outputCount" style="font-size: 11px; opacity: 0.7;">0 条</span>
+                </div>
+                <textarea id="outputText" readonly placeholder="转换好的文本将在这里显示..."></textarea>
+            </div>
+        </div>
+
+        <!-- 按钮区 -->
+        <div class="btn-group">
+            <button class="btn btn-secondary" onclick="clearAll()">清空内容</button>
+            <button class="btn btn-primary" id="copyBtn" onclick="copyResult()">📋 一键复制结果</button>
+        </div>
+    </div>
+
+    <div id="toast" class="toast">✅ 已成功复制到剪贴板！</div>
+
+    <script>
+        function autoConvert() {
+            const input = document.getElementById('inputText').value;
+            const mode = document.querySelector('input[name="formatMode"]:checked').value;
+            const lines = input.split('\n');
+            const result = [];
+            let validCount = 0;
+
+            lines.forEach(line => {
+                const trimmed = line.trim();
+                if (trimmed) {
+                    const parts = trimmed.split('----');
+                    
+                    if (mode === "4") {
+                        // 4段格式：账号----密码----辅助邮箱----2FA
+                        if (parts.length >= 4) {
+                            const [email, pass, recovery, fa] = parts;
+                            result.push(`邮箱账号--${email}----邮箱密码--${pass}----辅助邮箱--${recovery}----2FA验证码--${fa}`);
+                            validCount++;
+                        } else if (parts.length === 3) {
+                            const [email, pass, fa] = parts;
+                            result.push(`邮箱账号--${email}----邮箱密码--${pass}----2FA验证码--${fa}`);
+                            validCount++;
+                        } else {
+                            result.push(`// 格式错误(需4段): ${line}`);
+                        }
+                    } else if (mode === "3") {
+                        // 3段格式：账号----密码----2FA
+                        if (parts.length === 3) {
+                            const [email, pass, fa] = parts;
+                            result.push(`邮箱账号--${email}----邮箱密码--${pass}----2FA验证码--${fa}`);
+                            validCount++;
+                        } else if (parts.length >= 4) {
+                            // 输入了4段但选了3段模式，自动提取最后一段作为2FA
+                            const email = parts[0];
+                            const pass = parts[1];
+                            const fa = parts[parts.length - 1];
+                            result.push(`邮箱账号--${email}----邮箱密码--${pass}----2FA验证码--${fa}`);
+                            validCount++;
+                        } else {
+                            result.push(`// 格式错误(需3段): ${line}`);
+                        }
+                    }
+                }
+            });
+
+            document.getElementById('outputText').value = result.join('\n');
+            document.getElementById('inputCount').innerText = `${lines.filter(l => l.trim()).length} 条`;
+            document.getElementById('outputCount').innerText = `${validCount} 条转换成功`;
+        }
+
+        function copyResult() {
+            const outputText = document.getElementById('outputText');
+            if (!outputText.value.trim()) return;
+
+            outputText.select();
+            document.execCommand('copy');
+
+            const copyBtn = document.getElementById('copyBtn');
+            const originalText = copyBtn.innerHTML;
+            copyBtn.innerHTML = "✨ 复制成功！";
+            copyBtn.classList.add('btn-success');
+
+            showToast();
+
+            setTimeout(() => {
+                copyBtn.innerHTML = originalText;
+                copyBtn.classList.remove('btn-success');
+            }, 2000);
+        }
+
+        function clearAll() {
+            document.getElementById('inputText').value = '';
+            document.getElementById('outputText').value = '';
+            document.getElementById('inputCount').innerText = '0 条';
+            document.getElementById('outputCount').innerText = '0 条';
+        }
+
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
