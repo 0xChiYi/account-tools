@@ -53,6 +53,24 @@
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow-glow);
             padding: 36px 40px;
+            position: relative;
+        }
+
+        /* 返回主页按钮样式 */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 16px;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: var(--input-focus);
         }
 
         .header {
@@ -269,6 +287,11 @@
 <body>
 
     <div class="container">
+        <!-- 顶部返回主页入口 -->
+        <a href="index.html" class="back-link">
+            ← 🏠 返回工具箱导航
+        </a>
+
         <div class="header">
             <h1>⚡ 账号格式化转换器</h1>
             <p>轻松实现文本批量清洗与标准重组</p>
@@ -334,7 +357,6 @@
                     const parts = trimmed.split('----');
                     
                     if (mode === "4") {
-                        // 4段格式：账号----密码----辅助邮箱----2FA
                         if (parts.length >= 4) {
                             const [email, pass, recovery, fa] = parts;
                             result.push(`邮箱账号--${email}----邮箱密码--${pass}----辅助邮箱--${recovery}----2FA验证码--${fa}`);
@@ -347,13 +369,11 @@
                             result.push(`// 格式错误(需4段): ${line}`);
                         }
                     } else if (mode === "3") {
-                        // 3段格式：账号----密码----2FA
                         if (parts.length === 3) {
                             const [email, pass, fa] = parts;
                             result.push(`邮箱账号--${email}----邮箱密码--${pass}----2FA验证码--${fa}`);
                             validCount++;
                         } else if (parts.length >= 4) {
-                            // 输入了4段但选了3段模式，自动提取最后一段作为2FA
                             const email = parts[0];
                             const pass = parts[1];
                             const fa = parts[parts.length - 1];
