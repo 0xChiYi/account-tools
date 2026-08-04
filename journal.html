@@ -349,6 +349,7 @@
         }
         .btn-backup:hover { background: rgba(255, 255, 255, 0.15); color: white; }
 
+        /* Modal 弹窗体系 */
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(12px);
@@ -399,6 +400,13 @@
         .modal-btn-action:hover { color: white; background: rgba(255,255,255,0.15); }
         .modal-btn-del:hover { color: var(--accent-red); background: rgba(239, 68, 68, 0.2); }
 
+        /* 自定义二级二次确认遮罩框 (取代浏览器原生弹窗) */
+        .confirm-modal-box {
+            background: #1e293b; border: 1px solid rgba(239, 68, 68, 0.4);
+            border-radius: 20px; padding: 28px 32px; text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8); max-width: 420px; width: 90%;
+        }
+
         #posterCanvas { display: none; }
     </style>
 </head>
@@ -448,13 +456,11 @@
 
         <div class="dashboard-layout">
             
-            <!-- 1. 左侧栏：盈利 TOP 10 排行榜 -->
             <div class="side-panel">
                 <div class="side-title">🏆 盈利 TOP 10 排行榜</div>
                 <div class="rank-list-scroll" id="rankList"></div>
             </div>
 
-            <!-- 2. 中间表单：录入计划/战绩 -->
             <div class="form-card">
                 <div>
                     <h3 style="font-size: 18px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center;">
@@ -521,7 +527,6 @@
                 </div>
             </div>
 
-            <!-- 3. 右二：日历 -->
             <div class="calendar-card">
                 <div class="calendar-header">
                     <button class="cal-btn" onclick="changeMonth(-1)">◀ 上个月</button>
@@ -531,7 +536,6 @@
                 <div class="calendar-grid" id="calendarGrid"></div>
             </div>
 
-            <!-- 4. 右侧栏：交易心得与铁律 -->
             <div class="side-panel">
                 <div class="side-title">🧠 交易心得与铁律</div>
                 <div class="mindset-input-box">
@@ -550,7 +554,7 @@
         </div>
     </div>
 
-    <!-- 弹窗 Modal -->
+    <!-- 主 Modal 弹窗 -->
     <div class="modal" id="dayModal">
         <div class="modal-content">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 28px; border-bottom: 1px solid var(--card-border); padding-bottom: 18px;">
@@ -570,6 +574,18 @@
         </div>
     </div>
 
+    <!-- 自定义高颜值删除确认二次弹窗 -->
+    <div class="modal" id="confirmDeleteModal">
+        <div class="confirm-modal-box">
+            <h3 style="font-size: 20px; color: white; margin-bottom: 12px;">⚠️ 确认删除提示</h3>
+            <p style="font-size: 15px; color: #94a3b8; margin-bottom: 24px;">确定要删除这条交易记录吗？删除后数据不可恢复！</p>
+            <div style="display: flex; gap: 14px; justify-content: center;">
+                <button onclick="closeConfirmModal()" class="modal-btn-action" style="padding: 10px 24px;">取消</button>
+                <button onclick="executeDelete()" class="btn-submit" style="width: auto; padding: 10px 28px; background: #ef4444;">确认删除</button>
+            </div>
+        </div>
+    </div>
+
     <!-- 海报预览弹窗 -->
     <div class="modal" id="posterModal">
         <div class="modal-content" style="text-align: center; max-width: 580px;">
@@ -585,6 +601,8 @@
     <script>
         let currentDate = new Date();
         let currentActiveDateStr = '';
+        let pendingDeleteId = null;
+        let pendingDeleteDateStr = '';
 
         function updateBeijingClock() {
             const now = new Date();
@@ -789,7 +807,6 @@
             }
         }
 
-        // 彻底修复胜率自动智能识别逻辑
         function updateTopStats() {
             const logs = getStorageData();
             const capObj = getInitialCapital();
@@ -806,7 +823,6 @@
                     if (!isNaN(num)) netU += num;
                 }
 
-                // 优先根据选择的状态识别，如果选了持仓但有盈亏数字，自动识别正负！
                 let st = item.status || '';
                 if (st.includes('止盈') || (!isNaN(num) && num > 0)) {
                     wins++;
@@ -937,7 +953,6 @@
             let rawPnl = document.getElementById('pnlValue').value.trim();
             let rawStatus = document.getElementById('tradeStatus').value;
 
-            // 如果盈亏金额填了数字，但状态还是持仓中，自动给修正成止盈或止损
             if (rawPnl) {
                 let pnlNum = parseFloat(rawPnl.replace(/[^0-9.-]/g, ''));
                 if (!isNaN(pnlNum)) {
@@ -1049,7 +1064,7 @@
 
                             <div style="display:flex; justify-content:flex-end; gap:12px; border-top: 1px dashed rgba(255,255,255,0.08); padding-top:14px;">
                                 <button class="modal-btn-action" onclick="editTrade(${item.id})">✏️ 编辑修改</button>
-                                <button class="modal-btn-action modal-btn-del" onclick="deleteTrade(${item.id}, '${dateStr}')">🗑️ 删除记录</button>
+                                <button class="modal-btn-action modal-btn-del" onclick="triggerDeleteConfirm(${item.id}, '${dateStr}')">🗑️ 删除记录</button>
                             </div>
                         </div>
                     `;
@@ -1088,15 +1103,31 @@
             document.getElementById('posterModal').style.display = 'none';
         }
 
-        function deleteTrade(id, dateStr) {
-            if(confirm("确定删除这条记录？")) {
+        /* 替换原生 confirm：平滑呼出内置二次确认模态框 */
+        function triggerDeleteConfirm(id, dateStr) {
+            pendingDeleteId = id;
+            pendingDeleteDateStr = dateStr;
+            document.getElementById('confirmDeleteModal').style.display = 'flex';
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('confirmDeleteModal').style.display = 'none';
+            pendingDeleteId = null;
+            pendingDeleteDateStr = '';
+        }
+
+        function executeDelete() {
+            if (pendingDeleteId) {
                 let logs = getStorageData();
-                logs = logs.filter(l => l.id !== id);
+                logs = logs.filter(l => l.id !== pendingDeleteId);
                 setStorageData(logs);
                 updateTopStats();
                 renderCalendar();
                 renderRankTop10();
-                openDayModal(dateStr);
+                
+                let curDate = pendingDeleteDateStr;
+                closeConfirmModal();
+                openDayModal(curDate);
             }
         }
 
