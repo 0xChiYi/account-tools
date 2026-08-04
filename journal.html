@@ -28,16 +28,16 @@
             background: var(--bg-gradient);
             color: var(--text-main);
             min-height: 100vh;
-            padding: 30px 20px;
+            padding: 24px;
             display: flex;
             justify-content: center;
         }
 
-        .container { width: 100%; max-width: 960px; }
+        .container { width: 100%; max-width: 1200px; }
 
         .back-link {
             display: inline-flex; align-items: center; gap: 6px;
-            color: var(--text-muted); text-decoration: none; font-size: 13px; margin-bottom: 20px;
+            color: var(--text-muted); text-decoration: none; font-size: 13px; margin-bottom: 16px;
         }
         .back-link:hover { color: #818cf8; }
 
@@ -48,10 +48,10 @@
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
 
-        /* 顶部总看板 */
+        /* 顶部看板 */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 16px;
             margin-bottom: 24px;
         }
@@ -69,69 +69,120 @@
         .val-green { color: var(--accent-green); }
         .val-red { color: var(--accent-red); }
 
-        /* 日历样式 */
+        /* 核心：左右双栏布局 */
+        .dashboard-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard-layout { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: 1fr; }
+        }
+
+        /* 录入表单样式放大 */
+        .form-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+
+        .input-group { display: flex; flex-direction: column; gap: 6px; }
+        .input-group.full { grid-column: 1 / -1; }
+        label { font-size: 12px; font-weight: 600; color: var(--text-muted); }
+
+        input, select, textarea {
+            background: var(--input-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-md);
+            padding: 10px 12px;
+            color: white;
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        input:focus, textarea:focus { border-color: #818cf8; }
+
+        .btn-submit {
+            width: 100%; padding: 12px;
+            background: linear-gradient(135deg, var(--primary) 0%, #4338ca 100%);
+            color: white; border: none; border-radius: var(--radius-md);
+            font-weight: 600; cursor: pointer; font-size: 14px;
+            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
+        }
+
+        /* 紧凑型日历样式 */
         .calendar-card {
             background: var(--card-bg);
             backdrop-filter: blur(16px);
             border: 1px solid var(--card-border);
             border-radius: var(--radius-lg);
             padding: 20px;
-            margin-bottom: 24px;
         }
 
         .calendar-header {
             display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
 
         .cal-btn {
-            background: rgba(255,255,255,0.1); border: none; color: white;
-            padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;
+            background: rgba(255,255,255,0.08); border: 1px solid var(--card-border);
+            color: white; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 12px;
         }
-        .cal-btn:hover { background: rgba(255,255,255,0.2); }
+        .cal-btn:hover { background: rgba(255,255,255,0.15); }
 
         .calendar-grid {
-            display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; text-align: center;
+            display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center;
         }
 
-        .cal-day-label { font-size: 12px; color: var(--text-muted); font-weight: 600; padding-bottom: 8px; }
+        .cal-day-label { font-size: 11px; color: var(--text-muted); font-weight: 600; padding-bottom: 4px; }
 
         .cal-day {
-            aspect-ratio: 1;
+            height: 52px;
             background: rgba(15, 23, 42, 0.5);
             border: 1px solid rgba(255,255,255,0.05);
-            border-radius: var(--radius-md);
-            padding: 6px;
+            border-radius: 8px;
+            padding: 4px;
             display: flex; flex-direction: column; justify-content: space-between; align-items: center;
-            cursor: pointer; transition: all 0.2s; font-size: 12px;
+            cursor: pointer; transition: all 0.2s; font-size: 11px;
         }
 
-        .cal-day:hover { border-color: #818cf8; transform: translateY(-2px); }
+        .cal-day:hover { border-color: #818cf8; transform: translateY(-1px); }
         .cal-day.empty { background: transparent; border: none; cursor: default; }
 
-        .day-pnl { font-size: 10px; font-weight: 700; }
-        .bg-win { background: rgba(16, 185, 129, 0.2) !important; border-color: rgba(16, 185, 129, 0.4) !important; }
-        .bg-loss { background: rgba(239, 68, 68, 0.2) !important; border-color: rgba(239, 68, 68, 0.4) !important; }
+        .day-pnl { font-size: 9px; font-weight: 700; scale: 0.9; }
+        .bg-win { background: rgba(16, 185, 129, 0.25) !important; border-color: rgba(16, 185, 129, 0.4) !important; }
+        .bg-loss { background: rgba(239, 68, 68, 0.25) !important; border-color: rgba(239, 68, 68, 0.4) !important; }
 
-        /* 表单与弹窗 */
-        .form-card {
-            background: var(--card-bg); border: 1px solid var(--card-border);
-            border-radius: var(--radius-lg); padding: 20px; margin-bottom: 24px;
+        /* 底部导出备份栏 */
+        .backup-bar {
+            margin-top: 24px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
         }
-
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 12px; }
-        .input-group { display: flex; flex-direction: column; gap: 4px; }
-        .input-group.full { grid-column: 1 / -1; }
-        label { font-size: 11px; font-weight: 600; color: var(--text-muted); }
-        input, select, textarea {
-            background: var(--input-bg); border: 1px solid var(--card-border);
-            border-radius: var(--radius-md); padding: 8px 10px; color: white; font-size: 12px; outline: none;
+        .btn-backup {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
+            color: var(--text-muted);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
         }
-
-        .btn-submit {
-            width: 100%; padding: 10px; background: linear-gradient(135deg, var(--primary) 0%, #4338ca 100%);
-            color: white; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer;
-        }
+        .btn-backup:hover { background: rgba(255, 255, 255, 0.12); color: white; }
 
         /* 弹窗 Modal */
         .modal {
@@ -141,7 +192,7 @@
         }
         .modal-content {
             background: #1e293b; border: 1px solid var(--card-border);
-            border-radius: var(--radius-lg); padding: 24px; width: 90%; max-width: 600px;
+            border-radius: var(--radius-lg); padding: 24px; width: 90%; max-width: 550px;
             max-height: 80vh; overflow-y: auto;
         }
 
@@ -155,7 +206,7 @@
         <a href="index.html" class="back-link">← 🏠 返回工具箱导航</a>
 
         <div class="header">
-            <h1>📅 MEME 战绩日历 & 交易复盘</h1>
+            <h1>🎯 MEME 交易纪律 & 复盘日历</h1>
         </div>
 
         <!-- 顶部总看板 -->
@@ -174,62 +225,77 @@
             </div>
         </div>
 
-        <!-- 日历组件 -->
-        <div class="calendar-card">
-            <div class="calendar-header">
-                <button class="cal-btn" onclick="changeMonth(-1)">◀ 上个月</button>
-                <h3 id="calendarMonthTitle" style="font-size: 16px;">2026年 8月</h3>
-                <button class="cal-btn" onclick="changeMonth(1)">下个月 ▶</button>
+        <!-- 核心：左右分栏 Dashboard 布局 -->
+        <div class="dashboard-layout">
+            
+            <!-- 左侧：录入区域（主操作区，加宽放大） -->
+            <div class="form-card">
+                <h3 style="font-size: 15px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center;">
+                    ✍️ 录入交易计划
+                    <span style="font-size: 11px; color: #818cf8; font-weight: normal;">今日限 3 次</span>
+                </h3>
+                <form id="tradeForm" onsubmit="saveTrade(event)">
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label>日期</label>
+                            <input type="date" id="tradeDate" required>
+                        </div>
+                        <div class="input-group">
+                            <label>代币 Ticker</label>
+                            <input type="text" id="tokenName" placeholder="$PEPE" required>
+                        </div>
+                        <div class="input-group">
+                            <label>买入市值 (MC)</label>
+                            <input type="text" id="marketCap" placeholder="150K" required>
+                        </div>
+                        <div class="input-group">
+                            <label>交易状态</label>
+                            <select id="tradeStatus">
+                                <option value="持仓中">⏳ 持仓中</option>
+                                <option value="止盈">🎯 止盈 (盈利)</option>
+                                <option value="止损">💀 止损 (亏损)</option>
+                            </select>
+                        </div>
+                        <div class="input-group full">
+                            <label>盈亏数值 / 目标 (例: +200% 或 -50%)</label>
+                            <input type="text" id="pnlValue" placeholder="+150%">
+                        </div>
+                        <div class="input-group full">
+                            <label>💡 买入逻辑（强制思考：为什么买？是 Smart Money 进场还是 FOMO？）</label>
+                            <textarea id="buyReason" rows="3" placeholder="写下逻辑，杜绝盲目冲狗..." required></textarea>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-submit" id="submitBtn">⚡ 提交交易记录</button>
+                </form>
             </div>
-            <div class="calendar-grid" id="calendarGrid">
-                <!-- 动态生成日历 -->
+
+            <!-- 右侧：战绩日历（紧凑展示区） -->
+            <div class="calendar-card">
+                <div class="calendar-header">
+                    <button class="cal-btn" onclick="changeMonth(-1)">◀ 上个月</button>
+                    <h3 id="calendarMonthTitle" style="font-size: 15px;">2026年 8月</h3>
+                    <button class="cal-btn" onclick="changeMonth(1)">下个月 ▶</button>
+                </div>
+                <div class="calendar-grid" id="calendarGrid">
+                    <!-- 动态生成紧凑日历 -->
+                </div>
             </div>
+
         </div>
 
-        <!-- 录入表单 -->
-        <div class="form-card">
-            <h3 style="font-size: 14px; margin-bottom: 12px;">✍️ 录入笔交易 (今天限 3 次)</h3>
-            <form id="tradeForm" onsubmit="saveTrade(event)">
-                <div class="form-grid">
-                    <div class="input-group">
-                        <label>日期</label>
-                        <input type="date" id="tradeDate" required>
-                    </div>
-                    <div class="input-group">
-                        <label>代币 Ticker</label>
-                        <input type="text" id="tokenName" placeholder="$PEPE" required>
-                    </div>
-                    <div class="input-group">
-                        <label>买入市值</label>
-                        <input type="text" id="marketCap" placeholder="150K" required>
-                    </div>
-                    <div class="input-group">
-                        <label>交易结果/状态</label>
-                        <select id="tradeStatus">
-                            <option value="持仓中">⏳ 持仓中</option>
-                            <option value="止盈">🎯 止盈 (盈利)</option>
-                            <option value="止损">💀 止损 (亏损)</option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label>盈亏数值 (例: +200% 或 -50%)</label>
-                        <input type="text" id="pnlValue" placeholder="+150%">
-                    </div>
-                    <div class="input-group full">
-                        <label>💡 买入逻辑 (为什么买？写下复盘总结)</label>
-                        <textarea id="buyReason" rows="2" placeholder="强制思考逻辑..." required></textarea>
-                    </div>
-                </div>
-                <button type="submit" class="btn-submit" id="submitBtn">⚡ 提交交易记录</button>
-            </form>
+        <!-- 底部数据备份与同步工具栏 -->
+        <div class="backup-bar">
+            <button class="btn-backup" onclick="exportData()">📤 导出跨设备备份 (JSON)</button>
+            <button class="btn-backup" onclick="document.getElementById('importFile').click()">📥 导入备份数据</button>
+            <input type="file" id="importFile" style="display: none;" onchange="importData(event)" accept=".json">
         </div>
     </div>
 
     <!-- 每日明细弹窗 Modal -->
     <div class="modal" id="dayModal">
         <div class="modal-content">
-            <div style="display:flex; justify-space-between; align-items:center; margin-bottom: 16px;">
-                <h3 id="modalDateTitle" style="font-size: 16px;">明细查看</h3>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 16px;">
+                <h3 id="modalDateTitle" style="font-size: 15px;">明细查看</h3>
                 <button onclick="closeModal()" style="background:none; border:none; color:white; font-size:18px; cursor:pointer;">✕</button>
             </div>
             <div id="modalTradeList"></div>
@@ -237,7 +303,7 @@
     </div>
 
     <script>
-        let currentDate = new Date(); // 当前视图月份
+        let currentDate = new Date();
 
         function getStorageData() {
             const data = localStorage.getItem('meme_trades_data');
@@ -248,15 +314,12 @@
             localStorage.setItem('meme_trades_data', JSON.stringify(data));
         }
 
-        // 初始化
         function init() {
-            // 默认日期填今天
             document.getElementById('tradeDate').value = new Date().toISOString().split('T')[0];
             updateTopStats();
             renderCalendar();
         }
 
-        // 更新顶部总战绩
         function updateTopStats() {
             const logs = getStorageData();
             let wins = 0;
@@ -286,7 +349,6 @@
             }
         }
 
-        // 渲染日历
         function renderCalendar() {
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
@@ -296,24 +358,19 @@
             const grid = document.getElementById('calendarGrid');
             grid.innerHTML = '';
 
-            // 星期表头
             const daysOfWeek = ['日', '一', '二', '三', '四', '五', '六'];
             daysOfWeek.forEach(d => {
                 grid.innerHTML += `<div class="cal-day-label">${d}</div>`;
             });
 
-            // 获取当月第一天是星期几 & 当月总天数
             const firstDay = new Date(year, month, 1).getDay();
             const lastDate = new Date(year, month + 1, 0).getDate();
-
             const logs = getStorageData();
 
-            // 补空白
             for (let i = 0; i < firstDay; i++) {
                 grid.innerHTML += `<div class="cal-day empty"></div>`;
             }
 
-            // 生成日期单元格
             for (let date = 1; date <= lastDate; date++) {
                 const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
                 const dayTrades = logs.filter(l => l.date === dateStr);
@@ -352,7 +409,6 @@
             renderCalendar();
         }
 
-        // 保存交易
         function saveTrade(e) {
             e.preventDefault();
             const logs = getStorageData();
@@ -378,7 +434,6 @@
             renderCalendar();
         }
 
-        // 点击日历查看某日明细
         function openDayModal(dateStr) {
             document.getElementById('modalDateTitle').innerText = `📅 ${dateStr} 交易复盘明细`;
             const logs = getStorageData();
@@ -423,6 +478,44 @@
                 renderCalendar();
                 openDayModal(dateStr);
             }
+        }
+
+        // 导出跨设备备份 JSON
+        function exportData() {
+            const data = getStorageData();
+            if (data.length === 0) {
+                alert("当前没有可导出的交易数据！");
+                return;
+            }
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `meme_trades_backup_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+        }
+
+        // 导入跨设备备份 JSON
+        function importData(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                try {
+                    const importedData = JSON.parse(event.target.result);
+                    if (Array.isArray(importedData)) {
+                        setStorageData(importedData);
+                        alert("✅ 数据导入成功！");
+                        init();
+                    } else {
+                        alert("❌ 备份文件格式错误！");
+                    }
+                } catch (err) {
+                    alert("❌ 导入失败，请检查文件内容！");
+                }
+            };
+            reader.readAsText(file);
         }
 
         init();
