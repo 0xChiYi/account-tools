@@ -349,7 +349,6 @@
         }
         .btn-backup:hover { background: rgba(255, 255, 255, 0.15); color: white; }
 
-        /* Modal 弹窗体系 */
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(12px);
@@ -400,7 +399,6 @@
         .modal-btn-action:hover { color: white; background: rgba(255,255,255,0.15); }
         .modal-btn-del:hover { color: var(--accent-red); background: rgba(239, 68, 68, 0.2); }
 
-        /* 自定义二级二次确认遮罩框 (取代浏览器原生弹窗) */
         .confirm-modal-box {
             background: #1e293b; border: 1px solid rgba(239, 68, 68, 0.4);
             border-radius: 20px; padding: 28px 32px; text-align: center;
@@ -436,7 +434,7 @@
                 <div class="capital-input-group">
                     <span style="font-size: 15px; color: var(--text-muted);">初始总本金:</span>
                     <input type="text" id="initialCapital" value="1000" onchange="saveInitialCapital()">
-                    <select id="capitalUnit" onchange="saveInitialCapital()">
+                    <select id="capitalUnit" onchange="onUnitChange(this.value)">
                         <option value="USDT">USDT</option>
                         <option value="BNB">BNB</option>
                         <option value="SOL">SOL</option>
@@ -554,7 +552,6 @@
         </div>
     </div>
 
-    <!-- 主 Modal 弹窗 -->
     <div class="modal" id="dayModal">
         <div class="modal-content">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 28px; border-bottom: 1px solid var(--card-border); padding-bottom: 18px;">
@@ -574,7 +571,6 @@
         </div>
     </div>
 
-    <!-- 自定义高颜值删除确认二次弹窗 -->
     <div class="modal" id="confirmDeleteModal">
         <div class="confirm-modal-box">
             <h3 style="font-size: 20px; color: white; margin-bottom: 12px;">⚠️ 确认删除提示</h3>
@@ -586,7 +582,6 @@
         </div>
     </div>
 
-    <!-- 海报预览弹窗 -->
     <div class="modal" id="posterModal">
         <div class="modal-content" style="text-align: center; max-width: 580px;">
             <h3 style="font-size: 22px; margin-bottom: 12px;">🖼️ 战绩海报生成成功</h3>
@@ -681,6 +676,52 @@
             list.splice(index, 1);
             setMindsets(list);
             renderMindsets();
+        }
+
+        // 汇率获取逻辑
+        async function fetchExchangeRates() {
+            try {
+                const res = await fetch('https://api.binance.com/api/3/ticker/price?symbols=["BNBUSDT","SOLUSDT","ETHUSDT"]');
+                const data = await res.json();
+                let rates = { USDT: 1 };
+                data.forEach(item => {
+                    if (item.symbol === 'BNBUSDT') rates.BNB = parseFloat(item.price);
+                    if (item.symbol === 'SOLUSDT') rates.SOL = parseFloat(item.price);
+                    if (item.symbol === 'ETHUSDT') rates.ETH = parseFloat(item.price);
+                });
+                return rates;
+            } catch (err) {
+                // 降级兜底备用汇率
+                return { USDT: 1, BNB: 580, SOL: 140, ETH: 2600 };
+            }
+        }
+
+        // 币种切换触发汇率折算
+        async function onUnitChange(targetUnit) {
+            const oldUnit = localStorage.getItem('meme_initial_unit') || 'USDT';
+            if (oldUnit === targetUnit) return;
+
+            const inputEl = document.getElementById('initialCapital');
+            let currentVal = parseFloat(inputEl.value);
+
+            if (!isNaN(currentVal) && currentVal > 0) {
+                const statusText = document.getElementById('apiStatusText');
+                statusText.innerText = "⏳ 正在按实时汇率折算金额...";
+                statusText.style.color = "#818cf8";
+
+                const rates = await fetchExchangeRates();
+                let usdVal = currentVal * (rates[oldUnit] || 1);
+                let convertedVal = usdVal / (rates[targetUnit] || 1);
+
+                // 根据币种精度保留小数
+                let decimals = targetUnit === 'USDT' ? 2 : (targetUnit === 'BNB' ? 3 : 4);
+                inputEl.value = convertedVal.toFixed(decimals);
+
+                statusText.innerText = `✅ 已从 ${oldUnit} 自动实时折算为 ${targetUnit}`;
+                statusText.style.color = "#10b981";
+            }
+
+            saveInitialCapital();
         }
 
         function renderRankTop10() {
@@ -1103,7 +1144,6 @@
             document.getElementById('posterModal').style.display = 'none';
         }
 
-        /* 替换原生 confirm：平滑呼出内置二次确认模态框 */
         function triggerDeleteConfirm(id, dateStr) {
             pendingDeleteId = id;
             pendingDeleteDateStr = dateStr;
