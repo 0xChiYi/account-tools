@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MEME 交易纪律与复盘日志 - 0xChiYi Tools</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎯</text></svg>">
+    <title>MEME 交易纪律 & 复盘日历 - 0xChiYi Tools</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📅</text></svg>">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@500;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -33,161 +33,120 @@
             justify-content: center;
         }
 
-        .container {
-            width: 100%;
-            max-width: 960px;
-        }
+        .container { width: 100%; max-width: 960px; }
 
         .back-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 13px;
-            margin-bottom: 20px;
+            display: inline-flex; align-items: center; gap: 6px;
+            color: var(--text-muted); text-decoration: none; font-size: 13px; margin-bottom: 20px;
         }
         .back-link:hover { color: #818cf8; }
 
-        .header {
-            text-align: center;
+        .header { text-align: center; margin-bottom: 20px; }
+        .header h1 {
+            font-size: 26px; font-weight: 700;
+            background: linear-gradient(135deg, #ffffff 0%, #c7d2fe 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        /* 顶部总看板 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
             margin-bottom: 24px;
         }
 
-        .header h1 {
-            font-size: 26px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #ffffff 0%, #c7d2fe 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        /* 每日配额看板 */
-        .quota-card {
+        .stat-card {
             background: rgba(15, 23, 42, 0.8);
             border: 1px solid var(--card-border);
-            border-radius: var(--radius-lg);
-            padding: 20px;
+            border-radius: var(--radius-md);
+            padding: 16px;
             text-align: center;
-            margin-bottom: 24px;
         }
 
-        .quota-bullets {
-            display: flex;
-            justify-content: center;
-            gap: 16px;
-            margin-top: 12px;
-        }
+        .stat-label { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+        .stat-value { font-size: 22px; font-weight: 700; font-family: 'Fira Code', monospace; }
+        .val-green { color: var(--accent-green); }
+        .val-red { color: var(--accent-red); }
 
-        .bullet {
-            font-size: 24px;
-            opacity: 0.3;
-            transition: all 0.3s;
-        }
-        .bullet.active {
-            opacity: 1;
-            transform: scale(1.2);
-        }
-
-        /* 表单与区域 */
-        .form-card {
+        /* 日历样式 */
+        .calendar-card {
             background: var(--card-bg);
             backdrop-filter: blur(16px);
             border: 1px solid var(--card-border);
             border-radius: var(--radius-lg);
-            padding: 24px;
-            margin-bottom: 30px;
+            padding: 20px;
+            margin-bottom: 24px;
         }
 
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
+        .calendar-header {
+            display: flex; justify-content: space-between; align-items: center;
             margin-bottom: 16px;
         }
 
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
+        .cal-btn {
+            background: rgba(255,255,255,0.1); border: none; color: white;
+            padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;
+        }
+        .cal-btn:hover { background: rgba(255,255,255,0.2); }
+
+        .calendar-grid {
+            display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; text-align: center;
         }
 
-        .input-group.full-width {
-            grid-column: 1 / -1;
-        }
+        .cal-day-label { font-size: 12px; color: var(--text-muted); font-weight: 600; padding-bottom: 8px; }
 
-        label {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-muted);
-        }
-
-        input, select, textarea {
-            background: var(--input-bg);
-            border: 1px solid var(--card-border);
+        .cal-day {
+            aspect-ratio: 1;
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(255,255,255,0.05);
             border-radius: var(--radius-md);
-            padding: 10px 12px;
-            color: white;
-            font-size: 13px;
-            outline: none;
+            padding: 6px;
+            display: flex; flex-direction: column; justify-content: space-between; align-items: center;
+            cursor: pointer; transition: all 0.2s; font-size: 12px;
         }
 
-        input:focus, textarea:focus { border-color: #818cf8; }
+        .cal-day:hover { border-color: #818cf8; transform: translateY(-2px); }
+        .cal-day.empty { background: transparent; border: none; cursor: default; }
+
+        .day-pnl { font-size: 10px; font-weight: 700; }
+        .bg-win { background: rgba(16, 185, 129, 0.2) !important; border-color: rgba(16, 185, 129, 0.4) !important; }
+        .bg-loss { background: rgba(239, 68, 68, 0.2) !important; border-color: rgba(239, 68, 68, 0.4) !important; }
+
+        /* 表单与弹窗 */
+        .form-card {
+            background: var(--card-bg); border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg); padding: 20px; margin-bottom: 24px;
+        }
+
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 12px; }
+        .input-group { display: flex; flex-direction: column; gap: 4px; }
+        .input-group.full { grid-column: 1 / -1; }
+        label { font-size: 11px; font-weight: 600; color: var(--text-muted); }
+        input, select, textarea {
+            background: var(--input-bg); border: 1px solid var(--card-border);
+            border-radius: var(--radius-md); padding: 8px 10px; color: white; font-size: 12px; outline: none;
+        }
 
         .btn-submit {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, var(--primary) 0%, #4338ca 100%);
-            color: white;
-            border: none;
-            border-radius: var(--radius-md);
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
+            width: 100%; padding: 10px; background: linear-gradient(135deg, var(--primary) 0%, #4338ca 100%);
+            color: white; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer;
         }
 
-        .btn-submit:disabled {
-            background: #334155;
-            cursor: not-allowed;
-            opacity: 0.6;
+        /* 弹窗 Modal */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+            justify-content: center; align-items: center; z-index: 1000;
+        }
+        .modal-content {
+            background: #1e293b; border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg); padding: 24px; width: 90%; max-width: 600px;
+            max-height: 80vh; overflow-y: auto;
         }
 
-        /* 历史表格 */
-        .history-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius-lg);
-            padding: 24px;
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-            text-align: left;
-        }
-
-        th, td {
-            padding: 12px 10px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-
-        th { color: var(--text-muted); font-weight: 600; }
-
-        .pnl-positive { color: var(--accent-green); font-weight: 600; }
-        .pnl-negative { color: var(--accent-red); font-weight: 600; }
-        .badge-status {
-            padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;
-        }
-        .status-open { background: rgba(99, 102, 241, 0.2); color: #818cf8; }
-        .status-win { background: rgba(16, 185, 129, 0.2); color: #10b981; }
-        .status-loss { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
-
-        .btn-del {
-            background: transparent; border: none; color: #64748b; cursor: pointer;
-        }
-        .btn-del:hover { color: var(--accent-red); }
+        .badge-win { color: var(--accent-green); font-weight: 600; }
+        .badge-loss { color: var(--accent-red); font-weight: 600; }
     </style>
 </head>
 <body>
@@ -196,234 +155,277 @@
         <a href="index.html" class="back-link">← 🏠 返回工具箱导航</a>
 
         <div class="header">
-            <h1>🎯 MEME 交易纪律 & 复盘日志</h1>
-            <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">管住手，每天仅限 3 次高质量出手！</p>
+            <h1>📅 MEME 战绩日历 & 交易复盘</h1>
         </div>
 
-        <!-- 每日配额看板 -->
-        <div class="quota-card">
-            <div style="font-size: 14px; color: var(--text-muted);">今日（<span id="todayDate"></span>）剩余出手次数</div>
-            <div class="quota-bullets">
-                <span class="bullet" id="b1">🚀</span>
-                <span class="bullet" id="b2">🚀</span>
-                <span class="bullet" id="b3">🚀</span>
+        <!-- 顶部总看板 -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">累计盈利单 / 亏损单</div>
+                <div class="stat-value" id="winLossCount">0 / 0</div>
             </div>
-            <div id="quotaWarning" style="margin-top: 12px; font-size: 12px; color: #ef4444; display: none;">
-                ⚠️ 今日 3 次机会已用完！请关闭 TradingView / DexScreener，停止盲目交易！
+            <div class="stat-card">
+                <div class="stat-label">整体交易胜率</div>
+                <div class="stat-value" id="winRate">0%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">总盈亏状态</div>
+                <div class="stat-value" id="totalPnlStatus">--</div>
             </div>
         </div>
 
-        <!-- 交易录入表单 -->
+        <!-- 日历组件 -->
+        <div class="calendar-card">
+            <div class="calendar-header">
+                <button class="cal-btn" onclick="changeMonth(-1)">◀ 上个月</button>
+                <h3 id="calendarMonthTitle" style="font-size: 16px;">2026年 8月</h3>
+                <button class="cal-btn" onclick="changeMonth(1)">下个月 ▶</button>
+            </div>
+            <div class="calendar-grid" id="calendarGrid">
+                <!-- 动态生成日历 -->
+            </div>
+        </div>
+
+        <!-- 录入表单 -->
         <div class="form-card">
-            <h3 style="font-size: 15px; margin-bottom: 16px;">📝 记录一次新交易</h3>
+            <h3 style="font-size: 14px; margin-bottom: 12px;">✍️ 录入笔交易 (今天限 3 次)</h3>
             <form id="tradeForm" onsubmit="saveTrade(event)">
                 <div class="form-grid">
                     <div class="input-group">
-                        <label>代币名称 (Ticker)</label>
-                        <input type="text" id="tokenName" placeholder="例: $PEPE" required>
+                        <label>日期</label>
+                        <input type="date" id="tradeDate" required>
                     </div>
                     <div class="input-group">
-                        <label>买入市值 (MarketCap)</label>
-                        <input type="text" id="marketCap" placeholder="例: 150K" required>
+                        <label>代币 Ticker</label>
+                        <input type="text" id="tokenName" placeholder="$PEPE" required>
                     </div>
                     <div class="input-group">
-                        <label>止盈目标 (TP)</label>
-                        <input type="text" id="targetTP" placeholder="例: 500K (+230%)">
+                        <label>买入市值</label>
+                        <input type="text" id="marketCap" placeholder="150K" required>
                     </div>
                     <div class="input-group">
-                        <label>止损位置 (SL)</label>
-                        <input type="text" id="targetSL" placeholder="例: 100K (-33%)">
+                        <label>交易结果/状态</label>
+                        <select id="tradeStatus">
+                            <option value="持仓中">⏳ 持仓中</option>
+                            <option value="止盈">🎯 止盈 (盈利)</option>
+                            <option value="止损">💀 止损 (亏损)</option>
+                        </select>
                     </div>
-                    <div class="input-group full-width">
-                        <label>合约地址 (CA)</label>
-                        <input type="text" id="tokenCA" placeholder="0x... 或 Solana 地址" style="font-family: monospace;">
+                    <div class="input-group">
+                        <label>盈亏数值 (例: +200% 或 -50%)</label>
+                        <input type="text" id="pnlValue" placeholder="+150%">
                     </div>
-                    <div class="input-group full-width">
-                        <label>💡 买入理由（强制思考：为什么买？是 Smart Money 进场还是单纯 FOMO？）</label>
-                        <textarea id="buyReason" rows="2" placeholder="写下逻辑，杜绝盲目冲狗..." required></textarea>
+                    <div class="input-group full">
+                        <label>💡 买入逻辑 (为什么买？写下复盘总结)</label>
+                        <textarea id="buyReason" rows="2" placeholder="强制思考逻辑..." required></textarea>
                     </div>
                 </div>
-                <button type="submit" class="btn-submit" id="submitBtn">⚡ 确认消耗 1 次配额并提交</button>
+                <button type="submit" class="btn-submit" id="submitBtn">⚡ 提交交易记录</button>
             </form>
         </div>
+    </div>
 
-        <!-- 历史复盘表格 -->
-        <div class="history-card">
-            <h3 style="font-size: 15px; margin-bottom: 16px;">📜 交易日志与复盘</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>日期</th>
-                        <th>代币</th>
-                        <th>买入市值</th>
-                        <th>买入理由</th>
-                        <th>状态</th>
-                        <th>最终结果/PnL</th>
-                        <th>操作</th>
-                    </tr>
-                </thead>
-                <tbody id="tradeLogs">
-                    <!-- 动态生成 -->
-                </tbody>
-            </table>
+    <!-- 每日明细弹窗 Modal -->
+    <div class="modal" id="dayModal">
+        <div class="modal-content">
+            <div style="display:flex; justify-space-between; align-items:center; margin-bottom: 16px;">
+                <h3 id="modalDateTitle" style="font-size: 16px;">明细查看</h3>
+                <button onclick="closeModal()" style="background:none; border:none; color:white; font-size:18px; cursor:pointer;">✕</button>
+            </div>
+            <div id="modalTradeList"></div>
         </div>
     </div>
 
     <script>
-        const MAX_DAILY_TRADES = 3;
+        let currentDate = new Date(); // 当前视图月份
 
-        // 获取当天日期格式化 (YYYY-MM-DD)
-        function getTodayStr() {
-            const now = new Date();
-            return now.toISOString().split('T')[0];
-        }
-
-        // 获取当前数据
         function getStorageData() {
             const data = localStorage.getItem('meme_trades_data');
             return data ? JSON.parse(data) : [];
         }
 
-        // 保存数据
         function setStorageData(data) {
             localStorage.setItem('meme_trades_data', JSON.stringify(data));
         }
 
-        // 初始化页面与计算配额
-        function initPage() {
-            const today = getTodayStr();
-            document.getElementById('todayDate').innerText = today;
-
-            const logs = getStorageData();
-            const todayCount = logs.filter(item => item.date === today).length;
-
-            // 更新子弹图标
-            const remaining = MAX_DAILY_TRADES - todayCount;
-            for (let i = 1; i <= 3; i++) {
-                const b = document.getElementById(`b${i}`);
-                if (i <= remaining) {
-                    b.classList.add('active');
-                } else {
-                    b.classList.remove('active');
-                }
-            }
-
-            // 配额判断
-            const submitBtn = document.getElementById('submitBtn');
-            const warning = document.getElementById('quotaWarning');
-            if (remaining <= 0) {
-                submitBtn.disabled = true;
-                submitBtn.innerText = "❌ 今日 3 次出手配额已耗尽";
-                warning.style.display = "block";
-            } else {
-                submitBtn.disabled = false;
-                submitBtn.innerText = `⚡ 确认消耗 1 次配额并提交 (今日剩 ${remaining} 次)`;
-                warning.style.display = "none";
-            }
-
-            renderLogs();
+        // 初始化
+        function init() {
+            // 默认日期填今天
+            document.getElementById('tradeDate').value = new Date().toISOString().split('T')[0];
+            updateTopStats();
+            renderCalendar();
         }
 
-        // 保存新交易
+        // 更新顶部总战绩
+        function updateTopStats() {
+            const logs = getStorageData();
+            let wins = 0;
+            let losses = 0;
+
+            logs.forEach(item => {
+                if (item.status === '止盈') wins++;
+                if (item.status === '止损') losses++;
+            });
+
+            const total = wins + losses;
+            const winRate = total > 0 ? ((wins / total) * 100).toFixed(1) : 0;
+
+            document.getElementById('winLossCount').innerText = `${wins}胜 / ${losses}负`;
+            document.getElementById('winRate').innerText = `${winRate}%`;
+
+            const pnlStatus = document.getElementById('totalPnlStatus');
+            if (wins > losses) {
+                pnlStatus.innerText = "📈 总体盈利";
+                pnlStatus.className = "stat-value val-green";
+            } else if (losses > wins) {
+                pnlStatus.innerText = "📉 总体亏损";
+                pnlStatus.className = "stat-value val-red";
+            } else {
+                pnlStatus.innerText = "⚖️ 持平/初始化";
+                pnlStatus.className = "stat-value";
+            }
+        }
+
+        // 渲染日历
+        function renderCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+
+            document.getElementById('calendarMonthTitle').innerText = `${year}年 ${month + 1}月`;
+
+            const grid = document.getElementById('calendarGrid');
+            grid.innerHTML = '';
+
+            // 星期表头
+            const daysOfWeek = ['日', '一', '二', '三', '四', '五', '六'];
+            daysOfWeek.forEach(d => {
+                grid.innerHTML += `<div class="cal-day-label">${d}</div>`;
+            });
+
+            // 获取当月第一天是星期几 & 当月总天数
+            const firstDay = new Date(year, month, 1).getDay();
+            const lastDate = new Date(year, month + 1, 0).getDate();
+
+            const logs = getStorageData();
+
+            // 补空白
+            for (let i = 0; i < firstDay; i++) {
+                grid.innerHTML += `<div class="cal-day empty"></div>`;
+            }
+
+            // 生成日期单元格
+            for (let date = 1; date <= lastDate; date++) {
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
+                const dayTrades = logs.filter(l => l.date === dateStr);
+
+                let bgClass = '';
+                let pnlText = '';
+
+                if (dayTrades.length > 0) {
+                    let hasWin = dayTrades.some(t => t.status === '止盈');
+                    let hasLoss = dayTrades.some(t => t.status === '止损');
+
+                    if (hasWin && !hasLoss) {
+                        bgClass = 'bg-win';
+                        pnlText = '🟢 盈利';
+                    } else if (hasLoss && !hasWin) {
+                        bgClass = 'bg-loss';
+                        pnlText = '🔴 亏损';
+                    } else {
+                        pnlText = `🚀 ${dayTrades.length}笔`;
+                    }
+                }
+
+                const dayEl = document.createElement('div');
+                dayEl.className = `cal-day ${bgClass}`;
+                dayEl.onclick = () => openDayModal(dateStr);
+                dayEl.innerHTML = `
+                    <span style="font-weight:600;">${date}</span>
+                    <span class="day-pnl">${pnlText}</span>
+                `;
+                grid.appendChild(dayEl);
+            }
+        }
+
+        function changeMonth(delta) {
+            currentDate.setMonth(currentDate.getMonth() + delta);
+            renderCalendar();
+        }
+
+        // 保存交易
         function saveTrade(e) {
             e.preventDefault();
-            const today = getTodayStr();
             const logs = getStorageData();
 
             const newTrade = {
                 id: Date.now(),
-                date: today,
-                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                date: document.getElementById('tradeDate').value,
                 token: document.getElementById('tokenName').value.trim(),
                 mc: document.getElementById('marketCap').value.trim(),
-                tp: document.getElementById('targetTP').value.trim() || '未设定',
-                sl: document.getElementById('targetSL').value.trim() || '未设定',
-                ca: document.getElementById('tokenCA').value.trim(),
-                reason: document.getElementById('buyReason').value.trim(),
-                status: '持仓中',
-                pnl: '未结算'
+                status: document.getElementById('tradeStatus').value,
+                pnl: document.getElementById('pnlValue').value.trim() || '未设定',
+                reason: document.getElementById('buyReason').value.trim()
             };
 
             logs.unshift(newTrade);
             setStorageData(logs);
 
-            // 清空表单
-            document.getElementById('tradeForm').reset();
-            initPage();
+            document.getElementById('buyReason').value = '';
+            document.getElementById('tokenName').value = '';
+            document.getElementById('pnlValue').value = '';
+
+            updateTopStats();
+            renderCalendar();
         }
 
-        // 更新交易状态/结果
-        function updateTradeResult(id) {
+        // 点击日历查看某日明细
+        function openDayModal(dateStr) {
+            document.getElementById('modalDateTitle').innerText = `📅 ${dateStr} 交易复盘明细`;
             const logs = getStorageData();
-            const item = logs.find(l => l.id === id);
-            if (!item) return;
+            const dayTrades = logs.filter(l => l.date === dateStr);
 
-            const newStatus = prompt("选择状态: 1-止盈, 2-止损/归零, 3-持仓中", "1");
-            if (!newStatus) return;
+            const modalList = document.getElementById('modalTradeList');
+            modalList.innerHTML = '';
 
-            if (newStatus === "1") {
-                item.status = "止盈";
-                item.pnl = prompt("请输入盈亏结果 (例: +150% 或 +2.5SOL):", "+100%");
-            } else if (newStatus === "2") {
-                item.status = "止损/归零";
-                item.pnl = prompt("请输入盈亏结果 (例: -50% 或 -1SOL):", "-100%");
+            if (dayTrades.length === 0) {
+                modalList.innerHTML = `<p style="color:#64748b; text-align:center;">这一天没有任何交易，管住手非常棒！</p>`;
             } else {
-                item.status = "持仓中";
-                item.pnl = "未结算";
+                dayTrades.forEach(item => {
+                    let badge = item.status === '止盈' ? '<span class="badge-win">🎯 止盈</span>' :
+                                (item.status === '止损' ? '<span class="badge-loss">💀 止损</span>' : '⏳ 持仓中');
+                    
+                    modalList.innerHTML += `
+                        <div style="background:rgba(15, 23, 42, 0.6); padding:12px; border-radius:8px; margin-bottom:10px; border:1px solid rgba(255,255,255,0.05);">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                                <strong>${item.token} (市值: ${item.mc})</strong>
+                                <div>${badge} (${item.pnl})</div>
+                            </div>
+                            <div style="font-size:12px; color:#cbd5e1; line-height:1.4;">💡 逻辑: ${item.reason}</div>
+                            <button onclick="deleteTrade(${item.id}, '${dateStr}')" style="background:none; border:none; color:#ef4444; font-size:11px; margin-top:8px; cursor:pointer;">删除记录</button>
+                        </div>
+                    `;
+                });
             }
 
-            setStorageData(logs);
-            renderLogs();
+            document.getElementById('dayModal').style.display = 'flex';
         }
 
-        // 删除日志
-        function deleteTrade(id) {
-            if (confirm("确定删除这条交易记录吗？")) {
+        function closeModal() {
+            document.getElementById('dayModal').style.display = 'none';
+        }
+
+        function deleteTrade(id, dateStr) {
+            if(confirm("确定删除这条记录？")) {
                 let logs = getStorageData();
                 logs = logs.filter(l => l.id !== id);
                 setStorageData(logs);
-                initPage();
+                updateTopStats();
+                renderCalendar();
+                openDayModal(dateStr);
             }
         }
 
-        // 渲染表格
-        function renderLogs() {
-            const logs = getStorageData();
-            const tbody = document.getElementById('tradeLogs');
-            tbody.innerHTML = '';
-
-            if (logs.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#64748b; padding:20px;">暂无交易记录，今天保持空仓也是一种极佳的策略！</td></tr>`;
-                return;
-            }
-
-            logs.forEach(item => {
-                let statusBadge = '<span class="badge-status status-open">持仓中</span>';
-                if (item.status === '止盈') statusBadge = '<span class="badge-status status-win">🎯 止盈</span>';
-                if (item.status === '止损/归零') statusBadge = '<span class="badge-status status-loss">💀 止损</span>';
-
-                let pnlClass = '';
-                if (item.pnl && item.pnl.includes('+')) pnlClass = 'pnl-positive';
-                if (item.pnl && item.pnl.includes('-')) pnlClass = 'pnl-negative';
-
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${item.date} <span style="font-size:11px; color:#64748b;">${item.time}</span></td>
-                    <td><strong>${item.token}</strong></td>
-                    <td>${item.mc}</td>
-                    <td style="max-width:220px; font-size:12px; color:#cbd5e1;">${item.reason}</td>
-                    <td>${statusBadge}</td>
-                    <td class="${pnlClass}">${item.pnl || '未结算'}</td>
-                    <td>
-                        <button onclick="updateTradeResult(${item.id})" style="color:#818cf8; border:none; background:none; cursor:pointer; font-size:12px; margin-right:8px;">编辑结果</button>
-                        <button class="btn-del" onclick="deleteTrade(${item.id})">🗑️</button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        initPage();
+        init();
     </script>
 </body>
 </html>
