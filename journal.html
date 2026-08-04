@@ -33,7 +33,6 @@
             justify-content: center;
         }
 
-        /* 极大化大屏容器 */
         .container { width: 96%; max-width: 1750px; }
 
         .top-bar {
@@ -70,13 +69,13 @@
             display: inline-flex; align-items: center; gap: 12px;
         }
 
-        /* 消除渐变对 Emoji 图标的遮盖 */
         .header-icon {
             background: none !important;
             -webkit-text-fill-color: initial !important;
             display: inline-block;
         }
 
+        /* 顶部三大核心看板 */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -88,14 +87,41 @@
             background: rgba(15, 23, 42, 0.85);
             border: 1px solid var(--card-border);
             border-radius: var(--radius-md);
-            padding: 24px;
+            padding: 22px 24px;
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
 
-        .stat-label { font-size: 15px; color: var(--text-muted); margin-bottom: 10px; }
-        .stat-value { font-size: 34px; font-weight: 700; font-family: 'Fira Code', monospace; }
+        .stat-label { font-size: 15px; color: var(--text-muted); margin-bottom: 8px; }
+        .stat-value { font-size: 32px; font-weight: 700; font-family: 'Fira Code', monospace; }
+        .stat-subtext { font-size: 13px; color: var(--text-muted); margin-top: 6px; }
+
         .val-green { color: var(--accent-green); }
         .val-red { color: var(--accent-red); }
+
+        /* 本金输入框样式 */
+        .capital-input-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+        .capital-input-group input {
+            width: 110px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--card-border);
+            border-radius: 6px;
+            padding: 4px 8px;
+            color: #818cf8;
+            font-size: 13px;
+            font-family: 'Fira Code', monospace;
+            text-align: center;
+            outline: none;
+        }
+        .capital-input-group input:focus { border-color: #818cf8; }
 
         .dashboard-layout {
             display: grid;
@@ -164,10 +190,7 @@
             transition: all 0.2s;
             white-space: nowrap;
         }
-        .btn-refresh-ca:hover {
-            background: rgba(99, 102, 241, 0.4);
-            color: white;
-        }
+        .btn-refresh-ca:hover { background: rgba(99, 102, 241, 0.4); color: white; }
 
         .btn-submit {
             width: 100%; padding: 16px;
@@ -204,7 +227,6 @@
 
         .cal-day-label { font-size: 14px; color: var(--text-muted); font-weight: 600; padding-bottom: 8px; }
 
-        /* 极大化日历单元格 */
         .cal-day {
             min-height: 88px;
             background: rgba(15, 23, 42, 0.5);
@@ -218,7 +240,6 @@
         .cal-day:hover { border-color: #818cf8; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
         .cal-day.empty { background: transparent; border: none; cursor: default; }
 
-        /* 大字体呈现 +99U / -10U */
         .day-pnl {
             font-size: 14px;
             font-weight: 700;
@@ -279,18 +300,31 @@
             <h1><span class="header-icon">🎯</span> MEME 交易纪律 & 盈亏日历</h1>
         </div>
 
+        <!-- 重构后的三大核心看板 -->
         <div class="stats-grid">
+            <!-- 看板 1：胜率与战绩合并 -->
             <div class="stat-card">
-                <div class="stat-label">累计胜单 / 亏单</div>
-                <div class="stat-value" id="winLossCount">0 / 0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">整体交易胜率</div>
+                <div class="stat-label">整体胜率 & 战绩</div>
                 <div class="stat-value" id="winRate">0%</div>
+                <div class="stat-subtext" id="winLossCount">0 胜 / 0 负</div>
             </div>
+
+            <!-- 看板 2：初始本金与动态资金总额 -->
+            <div class="stat-card">
+                <div class="capital-input-group">
+                    <span style="font-size: 13px; color: var(--text-muted);">初始总本金:</span>
+                    <input type="text" id="initialCapital" value="1000" onchange="saveInitialCapital(this.value)">
+                    <span style="font-size: 13px; color: var(--text-muted);">U</span>
+                </div>
+                <div class="stat-value" id="currentCapital">1000 U</div>
+                <div class="stat-subtext" id="capitalChangeRatio">动态资金池 (收益率: 0%)</div>
+            </div>
+
+            <!-- 看板 3：累计战绩净盈亏 -->
             <div class="stat-card">
                 <div class="stat-label">累计战绩净盈亏</div>
                 <div class="stat-value" id="totalPnlStatus">0 U</div>
+                <div class="stat-subtext">根据历史已结算订单自动汇总</div>
             </div>
         </div>
 
@@ -440,8 +474,23 @@
             localStorage.setItem('meme_trades_data', JSON.stringify(data));
         }
 
+        // 保存/读取初始本金
+        function getInitialCapital() {
+            const cap = localStorage.getItem('meme_initial_capital');
+            return cap ? parseFloat(cap) : 1000;
+        }
+
+        function saveInitialCapital(val) {
+            const num = parseFloat(val);
+            if (!isNaN(num) && num >= 0) {
+                localStorage.setItem('meme_initial_capital', num);
+                updateTopStats();
+            }
+        }
+
         function init() {
             document.getElementById('tradeDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('initialCapital').value = getInitialCapital();
             updateTopStats();
             renderCalendar();
         }
@@ -486,6 +535,7 @@
             }
         }
 
+        // 全自动计算：合并胜率 + 本金动态复利资金池 + 累计净盈亏
         function updateTopStats() {
             const logs = getStorageData();
             let wins = 0;
@@ -505,9 +555,28 @@
             const total = wins + losses;
             const winRate = total > 0 ? ((wins / total) * 100).toFixed(1) : 0;
 
-            document.getElementById('winLossCount').innerText = `${wins}胜 / ${losses}负`;
+            // 1. 左侧看板：胜率 + 战绩
             document.getElementById('winRate').innerText = `${winRate}%`;
+            document.getElementById('winLossCount').innerText = `${wins} 胜 / ${losses} 负 (共 ${total} 笔单)`;
 
+            // 2. 中间看板：初始本金 + 动态资金池
+            const initCap = getInitialCapital();
+            const currentCap = initCap + netU;
+            const returnRatio = initCap > 0 ? ((netU / initCap) * 100).toFixed(1) : 0;
+
+            const currCapEl = document.getElementById('currentCapital');
+            currCapEl.innerText = `${currentCap.toFixed(1)} U`;
+            if (netU > 0) {
+                currCapEl.className = "stat-value val-green";
+            } else if (netU < 0) {
+                currCapEl.className = "stat-value val-red";
+            } else {
+                currCapEl.className = "stat-value";
+            }
+
+            document.getElementById('capitalChangeRatio').innerText = `动态资金池 (收益率: ${returnRatio >= 0 ? '+' : ''}${returnRatio}%)`;
+
+            // 3. 右侧看板：累计净盈亏
             const pnlStatus = document.getElementById('totalPnlStatus');
             if (netU > 0) {
                 pnlStatus.innerText = `+${netU} U`;
