@@ -75,7 +75,6 @@
             display: inline-block;
         }
 
-        /* 顶部三大核心看板 */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -102,7 +101,6 @@
         .val-green { color: var(--accent-green); }
         .val-red { color: var(--accent-red); }
 
-        /* 本金输入框样式 */
         .capital-input-group {
             display: flex;
             align-items: center;
@@ -252,18 +250,6 @@
         .bg-win { background: rgba(16, 185, 129, 0.18) !important; border-color: rgba(16, 185, 129, 0.45) !important; }
         .bg-loss { background: rgba(239, 68, 68, 0.18) !important; border-color: rgba(239, 68, 68, 0.45) !important; }
 
-        .tag-badge {
-            display: inline-block; font-size: 12px; padding: 4px 10px; border-radius: 12px;
-            background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: #cbd5e1;
-            margin-right: 6px; margin-top: 6px;
-        }
-
-        .quick-link {
-            font-size: 12px; color: #818cf8; text-decoration: none; margin-right: 10px; border: 1px solid rgba(129, 140, 248, 0.3);
-            padding: 4px 8px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;
-        }
-        .quick-link:hover { background: rgba(129, 140, 248, 0.2); }
-
         .backup-bar { margin-top: 32px; display: flex; justify-content: flex-end; gap: 16px; }
         .btn-backup {
             background: rgba(255, 255, 255, 0.06); border: 1px solid var(--card-border);
@@ -271,16 +257,100 @@
         }
         .btn-backup:hover { background: rgba(255, 255, 255, 0.15); color: white; }
 
+        /* ------------------ 1.5 倍放大专用 Modal 弹窗 ------------------ */
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.75); backdrop-filter: blur(8px);
+            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(12px);
             justify-content: center; align-items: center; z-index: 1000;
         }
+        
+        /* 1.5倍 弹窗主体尺寸 */
         .modal-content {
-            background: #1e293b; border: 1px solid var(--card-border);
-            border-radius: var(--radius-lg); padding: 32px; width: 92%; max-width: 700px;
-            max-height: 85vh; overflow-y: auto;
+            background: #111827; border: 1px solid var(--card-border);
+            border-radius: 28px; padding: 50px; width: 95%; max-width: 1100px;
+            max-height: 90vh; overflow-y: auto;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.7);
         }
+
+        /* 1.5倍 卡片内部布局 */
+        .modal-trade-card {
+            background: rgba(30, 41, 59, 0.65);
+            border: 1px solid var(--card-border);
+            border-radius: 22px;
+            padding: 30px;
+            margin-bottom: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .modal-trade-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding-bottom: 16px;
+        }
+
+        .modal-token-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .modal-token-meta {
+            font-size: 16px;
+            color: var(--text-muted);
+            font-weight: normal;
+        }
+
+        .modal-pnl-badge {
+            font-size: 22px;
+            font-weight: 700;
+            font-family: 'Fira Code', monospace;
+            padding: 6px 18px;
+            border-radius: 12px;
+        }
+
+        .modal-reason-box {
+            background: rgba(15, 23, 42, 0.7);
+            border-radius: 14px;
+            padding: 18px 22px;
+            font-size: 17px;
+            color: #f1f5f9;
+            line-height: 1.7;
+        }
+
+        .modal-meta-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        .tag-badge {
+            display: inline-flex; align-items: center; gap: 6px; font-size: 15px; padding: 6px 16px; border-radius: 20px;
+            background: rgba(99, 102, 241, 0.18); border: 1px solid rgba(99, 102, 241, 0.35); color: #c7d2fe;
+        }
+
+        .quick-link {
+            font-size: 15px; color: #818cf8; text-decoration: none; border: 1px solid rgba(129, 140, 248, 0.35);
+            padding: 8px 14px; border-radius: 10px; display: inline-flex; align-items: center; gap: 6px;
+            background: rgba(15, 23, 42, 0.6); transition: all 0.2s;
+        }
+        .quick-link:hover { background: rgba(129, 140, 248, 0.3); color: white; }
+
+        .modal-btn-action {
+            background: rgba(255,255,255,0.06); border: 1px solid var(--card-border);
+            color: var(--text-muted); padding: 10px 20px; border-radius: 12px; font-size: 15px; cursor: pointer;
+            transition: all 0.2s;
+        }
+        .modal-btn-action:hover { color: white; background: rgba(255,255,255,0.15); }
+        .modal-btn-del:hover { color: var(--accent-red); background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.4); }
 
         #posterCanvas { display: none; }
     </style>
@@ -300,16 +370,13 @@
             <h1><span class="header-icon">🎯</span> MEME 交易纪律 & 盈亏日历</h1>
         </div>
 
-        <!-- 重构后的三大核心看板 -->
         <div class="stats-grid">
-            <!-- 看板 1：胜率与战绩合并 -->
             <div class="stat-card">
                 <div class="stat-label">整体胜率 & 战绩</div>
                 <div class="stat-value" id="winRate">0%</div>
                 <div class="stat-subtext" id="winLossCount">0 胜 / 0 负</div>
             </div>
 
-            <!-- 看板 2：初始本金与动态资金总额 -->
             <div class="stat-card">
                 <div class="capital-input-group">
                     <span style="font-size: 13px; color: var(--text-muted);">初始总本金:</span>
@@ -320,7 +387,6 @@
                 <div class="stat-subtext" id="capitalChangeRatio">动态资金池 (收益率: 0%)</div>
             </div>
 
-            <!-- 看板 3：累计战绩净盈亏 -->
             <div class="stat-card">
                 <div class="stat-label">累计战绩净盈亏</div>
                 <div class="stat-value" id="totalPnlStatus">0 U</div>
@@ -412,27 +478,33 @@
         </div>
     </div>
 
-    <!-- 弹窗 Modal -->
+    <!-- 1.5倍 放大专用弹窗 Modal -->
     <div class="modal" id="dayModal">
         <div class="modal-content">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
-                <h3 id="modalDateTitle" style="font-size: 18px;">明细查看</h3>
-                <button onclick="closeModal()" style="background:none; border:none; color:white; font-size:22px; cursor:pointer;">✕</button>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 30px; border-bottom: 1px solid var(--card-border); padding-bottom: 20px;">
+                <div>
+                    <h3 id="modalDateTitle" style="font-size: 28px; font-weight: 700;">📅 交易复盘明细</h3>
+                    <p style="font-size: 16px; color: var(--text-muted); margin-top: 6px;" id="modalDaySummary">当日战绩复盘</p>
+                </div>
+                <button onclick="closeModal()" style="background:none; border:none; color:var(--text-muted); font-size:32px; cursor:pointer;" onmouseover="this.style.color='white'" onmouseout="this.style.color='var(--text-muted)'">✕</button>
             </div>
+
             <div id="modalTradeList"></div>
-            <div style="margin-top: 24px; text-align: right;">
-                <button onclick="generatePoster()" class="btn-submit" style="width: auto; padding: 12px 24px;">📸 生成今日复盘战绩海报</button>
+
+            <div style="margin-top: 36px; display: flex; justify-content: space-between; align-items: center;">
+                <button onclick="closeModal()" class="modal-btn-action" style="padding: 14px 26px; font-size: 16px;">关闭窗口</button>
+                <button onclick="generatePoster()" class="btn-submit" style="width: auto; padding: 16px 36px; font-size: 18px;">📸 生成今日复盘战绩海报</button>
             </div>
         </div>
     </div>
 
     <!-- 海报预览弹窗 -->
     <div class="modal" id="posterModal">
-        <div class="modal-content" style="text-align: center; max-width: 520px;">
-            <h3 style="font-size: 18px; margin-bottom: 12px;">🖼️ 战绩海报生成成功</h3>
-            <p style="font-size: 13px; color: #94a3b8; margin-bottom: 18px;">右键或长按图片即可复制/保存到本地</p>
-            <img id="posterImage" style="width: 100%; border-radius: 12px; border: 1px solid var(--card-border);" src="" alt="战绩海报">
-            <button onclick="closePosterModal()" class="cal-btn" style="margin-top: 18px; width: 100%; padding: 12px;">关闭</button>
+        <div class="modal-content" style="text-align: center; max-width: 600px;">
+            <h3 style="font-size: 22px; margin-bottom: 14px;">🖼️ 战绩海报生成成功</h3>
+            <p style="font-size: 15px; color: #94a3b8; margin-bottom: 24px;">右键或长按图片即可复制/保存到本地</p>
+            <img id="posterImage" style="width: 100%; border-radius: 14px; border: 1px solid var(--card-border);" src="" alt="战绩海报">
+            <button onclick="closePosterModal()" class="cal-btn" style="margin-top: 24px; width: 100%; padding: 14px; font-size: 16px;">关闭</button>
         </div>
     </div>
 
@@ -474,7 +546,6 @@
             localStorage.setItem('meme_trades_data', JSON.stringify(data));
         }
 
-        // 保存/读取初始本金
         function getInitialCapital() {
             const cap = localStorage.getItem('meme_initial_capital');
             return cap ? parseFloat(cap) : 1000;
@@ -535,7 +606,6 @@
             }
         }
 
-        // 全自动计算：合并胜率 + 本金动态复利资金池 + 累计净盈亏
         function updateTopStats() {
             const logs = getStorageData();
             let wins = 0;
@@ -555,11 +625,9 @@
             const total = wins + losses;
             const winRate = total > 0 ? ((wins / total) * 100).toFixed(1) : 0;
 
-            // 1. 左侧看板：胜率 + 战绩
             document.getElementById('winRate').innerText = `${winRate}%`;
             document.getElementById('winLossCount').innerText = `${wins} 胜 / ${losses} 负 (共 ${total} 笔单)`;
 
-            // 2. 中间看板：初始本金 + 动态资金池
             const initCap = getInitialCapital();
             const currentCap = initCap + netU;
             const returnRatio = initCap > 0 ? ((netU / initCap) * 100).toFixed(1) : 0;
@@ -576,7 +644,6 @@
 
             document.getElementById('capitalChangeRatio').innerText = `动态资金池 (收益率: ${returnRatio >= 0 ? '+' : ''}${returnRatio}%)`;
 
-            // 3. 右侧看板：累计净盈亏
             const pnlStatus = document.getElementById('totalPnlStatus');
             if (netU > 0) {
                 pnlStatus.innerText = `+${netU} U`;
@@ -707,27 +774,39 @@
             renderCalendar();
         }
 
+        // 打开 1.5倍 放大弹窗 Modal
         function openDayModal(dateStr) {
             currentActiveDateStr = dateStr;
             document.getElementById('modalDateTitle').innerText = `📅 ${dateStr} 交易复盘明细`;
             const logs = getStorageData();
             const dayTrades = logs.filter(l => l.date === dateStr);
 
+            let dayTotalU = 0;
+            dayTrades.forEach(t => {
+                if (t.pnl) {
+                    let num = parseFloat(t.pnl.replace(/[^0-9.-]/g, ''));
+                    if (!isNaN(num)) dayTotalU += num;
+                }
+            });
+
+            document.getElementById('modalDaySummary').innerText = 
+                `共交易 ${dayTrades.length} 笔单 | 今日累计净战绩: ${dayTotalU >= 0 ? '+' : ''}${dayTotalU} U`;
+
             const modalList = document.getElementById('modalTradeList');
             modalList.innerHTML = '';
 
             if (dayTrades.length === 0) {
-                modalList.innerHTML = `<p style="color:#64748b; text-align:center;">这一天没有任何交易，管住手非常棒！</p>`;
+                modalList.innerHTML = `<p style="color:#64748b; text-align:center; padding: 50px 0; font-size:18px;">这一天没有任何交易，管住手非常棒！</p>`;
             } else {
                 dayTrades.forEach(item => {
-                    let badge = item.status === '止盈' ? '<span class="txt-win">🎯 止盈</span>' :
-                                (item.status === '止损' ? '<span class="txt-loss">💀 止损</span>' : '⏳ 持仓中');
-                    let tagHtml = item.tag ? `<span class="tag-badge">${item.tag}</span>` : '';
+                    let statusBadgeClass = item.status === '止盈' ? 'txt-win' : (item.status === '止损' ? 'txt-loss' : '');
+                    let badgeText = item.status === '止盈' ? '🎯 止盈' : (item.status === '止损' ? '💀 止损' : '⏳ 持仓中');
                     
+                    let tagHtml = item.tag ? `<span class="tag-badge">🏷️ ${item.tag}</span>` : '';
                     let caLinks = '';
                     if (item.ca) {
                         caLinks = `
-                            <div style="margin-top: 8px;">
+                            <div style="display:flex; gap:10px;">
                                 <a href="https://dexscreener.com/search?q=${item.ca}" target="_blank" class="quick-link">📈 DexScreener</a>
                                 <a href="https://gmgn.ai/sol/token/${item.ca}" target="_blank" class="quick-link">🤖 GMGN</a>
                                 <a href="https://rugcheck.xyz/tokens/${item.ca}" target="_blank" class="quick-link">🛡️ RugCheck</a>
@@ -736,17 +815,29 @@
                     }
 
                     modalList.innerHTML += `
-                        <div style="background:rgba(15, 23, 42, 0.7); padding:16px; border-radius:12px; margin-bottom:14px; border:1px solid rgba(255,255,255,0.08);">
-                            <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:15px;">
-                                <strong>${item.token} (买入: ${item.buyAmount || '未填'} | MC: ${item.mc})</strong>
-                                <div>${badge} (<strong style="font-family:monospace;">${item.pnl}</strong>)</div>
+                        <div class="modal-trade-card">
+                            <div class="modal-trade-header">
+                                <div class="modal-token-title">
+                                    <span>${item.token}</span>
+                                    <span class="modal-token-meta">买入本金: ${item.buyAmount || '未填'} | 买入MC: ${item.mc}</span>
+                                </div>
+                                <div class="modal-pnl-badge ${statusBadgeClass}">
+                                    ${badgeText} (${item.pnl})
+                                </div>
                             </div>
-                            <div style="font-size:14px; color:#cbd5e1; line-height:1.5;">💡 逻辑: ${item.reason}</div>
-                            ${tagHtml}
-                            ${caLinks}
-                            <div style="margin-top:12px; display:flex; gap:14px;">
-                                <button onclick="editTrade(${item.id})" style="background:none; border:none; color:#818cf8; font-size:13px; cursor:pointer;">✏️ 编辑修改</button>
-                                <button onclick="deleteTrade(${item.id}, '${dateStr}')" style="background:none; border:none; color:#ef4444; font-size:13px; cursor:pointer;">🗑️ 删除</button>
+                            
+                            <div class="modal-reason-box">
+                                💡 <strong>买入逻辑与总结：</strong>${item.reason}
+                            </div>
+
+                            <div class="modal-meta-row">
+                                <div>${tagHtml}</div>
+                                ${caLinks}
+                            </div>
+
+                            <div style="display:flex; justify-content:flex-end; gap:12px; border-top: 1px dashed rgba(255,255,255,0.08); padding-top:14px;">
+                                <button class="modal-btn-action" onclick="editTrade(${item.id})">✏️ 编辑修改</button>
+                                <button class="modal-btn-action modal-btn-del" onclick="deleteTrade(${item.id}, '${dateStr}')">🗑️ 删除记录</button>
                             </div>
                         </div>
                     `;
