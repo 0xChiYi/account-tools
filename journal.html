@@ -257,14 +257,13 @@
         }
         .btn-backup:hover { background: rgba(255, 255, 255, 0.15); color: white; }
 
-        /* ------------------ 1.5 倍放大专用 Modal 弹窗 ------------------ */
+        /* ------------------ Modal 弹窗系统 ------------------ */
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(12px);
             justify-content: center; align-items: center; z-index: 1000;
         }
         
-        /* 1.5倍 弹窗主体尺寸 */
         .modal-content {
             background: #111827; border: 1px solid var(--card-border);
             border-radius: 28px; padding: 50px; width: 95%; max-width: 1100px;
@@ -272,7 +271,6 @@
             box-shadow: 0 25px 60px rgba(0,0,0,0.7);
         }
 
-        /* 1.5倍 卡片内部布局 */
         .modal-trade-card {
             background: rgba(30, 41, 59, 0.65);
             border: 1px solid var(--card-border);
@@ -337,12 +335,13 @@
             background: rgba(99, 102, 241, 0.18); border: 1px solid rgba(99, 102, 241, 0.35); color: #c7d2fe;
         }
 
-        .quick-link {
-            font-size: 15px; color: #818cf8; text-decoration: none; border: 1px solid rgba(129, 140, 248, 0.35);
-            padding: 8px 14px; border-radius: 10px; display: inline-flex; align-items: center; gap: 6px;
-            background: rgba(15, 23, 42, 0.6); transition: all 0.2s;
+        /* 专门改为 DEBOT 按钮 */
+        .debot-link {
+            font-size: 15px; color: #a855f7; text-decoration: none; border: 1px solid rgba(168, 85, 247, 0.4);
+            padding: 8px 18px; border-radius: 10px; display: inline-flex; align-items: center; gap: 6px;
+            background: rgba(168, 85, 247, 0.12); font-weight: 600; transition: all 0.2s;
         }
-        .quick-link:hover { background: rgba(129, 140, 248, 0.3); color: white; }
+        .debot-link:hover { background: rgba(168, 85, 247, 0.28); color: white; border-color: #c084fc; }
 
         .modal-btn-action {
             background: rgba(255,255,255,0.06); border: 1px solid var(--card-border);
@@ -478,7 +477,7 @@
         </div>
     </div>
 
-    <!-- 1.5倍 放大专用弹窗 Modal -->
+    <!-- 弹窗 Modal -->
     <div class="modal" id="dayModal">
         <div class="modal-content">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 30px; border-bottom: 1px solid var(--card-border); padding-bottom: 20px;">
@@ -774,7 +773,6 @@
             renderCalendar();
         }
 
-        // 打开 1.5倍 放大弹窗 Modal
         function openDayModal(dateStr) {
             currentActiveDateStr = dateStr;
             document.getElementById('modalDateTitle').innerText = `📅 ${dateStr} 交易复盘明细`;
@@ -803,14 +801,12 @@
                     let badgeText = item.status === '止盈' ? '🎯 止盈' : (item.status === '止损' ? '💀 止损' : '⏳ 持仓中');
                     
                     let tagHtml = item.tag ? `<span class="tag-badge">🏷️ ${item.tag}</span>` : '';
+                    
+                    // 改为 DEBOT 单一快捷链接
                     let caLinks = '';
                     if (item.ca) {
                         caLinks = `
-                            <div style="display:flex; gap:10px;">
-                                <a href="https://dexscreener.com/search?q=${item.ca}" target="_blank" class="quick-link">📈 DexScreener</a>
-                                <a href="https://gmgn.ai/sol/token/${item.ca}" target="_blank" class="quick-link">🤖 GMGN</a>
-                                <a href="https://rugcheck.xyz/tokens/${item.ca}" target="_blank" class="quick-link">🛡️ RugCheck</a>
-                            </div>
+                            <a href="https://debot.ai/token/${item.ca}" target="_blank" class="debot-link">🤖 DEBOT 分析/交易</a>
                         `;
                     }
 
