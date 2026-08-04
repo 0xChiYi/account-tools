@@ -17,8 +17,8 @@
             --input-bg: rgba(15, 23, 42, 0.65);
             --accent-green: #10b981;
             --accent-red: #ef4444;
-            --radius-lg: 24px;
-            --radius-md: 14px;
+            --radius-lg: 28px;
+            --radius-md: 16px;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -28,13 +28,13 @@
             background: var(--bg-gradient);
             color: var(--text-main);
             min-height: 100vh;
-            padding: 36px 48px;
+            padding: 30px;
             display: flex;
             justify-content: center;
         }
 
-        /* 极大化舒展大屏容器 */
-        .container { width: 100%; max-width: 1850px; }
+        /* 铺满整个显示器，彻底消除大面积黑框留白 */
+        .container { width: 98vw; max-width: 2400px; }
 
         .top-bar {
             display: flex;
@@ -55,17 +55,17 @@
             color: #818cf8;
             background: rgba(15, 23, 42, 0.7);
             border: 1px solid var(--card-border);
-            padding: 10px 22px;
+            padding: 10px 24px;
             border-radius: 24px;
             display: flex; align-items: center; gap: 10px;
         }
 
         .header { text-align: center; margin-bottom: 32px; }
         .header h1 {
-            font-size: 42px; font-weight: 700;
+            font-size: 44px; font-weight: 700;
             background: linear-gradient(135deg, #ffffff 0%, #c7d2fe 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            display: inline-flex; align-items: center; gap: 14px;
+            display: inline-flex; align-items: center; gap: 16px;
         }
 
         .header-icon {
@@ -85,14 +85,14 @@
             background: rgba(15, 23, 42, 0.85);
             border: 1px solid var(--card-border);
             border-radius: var(--radius-md);
-            padding: 26px 30px;
+            padding: 28px;
             text-align: center;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
         }
 
-        .stat-label { font-size: 16px; color: var(--text-muted); margin-bottom: 8px; }
-        .stat-value { font-size: 36px; font-weight: 700; font-family: 'Fira Code', monospace; }
-        .stat-subtext { font-size: 14px; color: var(--text-muted); margin-top: 6px; }
+        .stat-label { font-size: 18px; color: var(--text-muted); margin-bottom: 10px; }
+        .stat-value { font-size: 40px; font-weight: 700; font-family: 'Fira Code', monospace; }
+        .stat-subtext { font-size: 15px; color: var(--text-muted); margin-top: 8px; }
 
         .val-green { color: var(--accent-green); }
         .val-red { color: var(--accent-red); }
@@ -101,24 +101,24 @@
             display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
         }
         .capital-input-group input {
-            width: 120px; background: rgba(15, 23, 42, 0.8); border: 1px solid var(--card-border);
-            border-radius: 8px; padding: 6px 10px; color: #818cf8; font-size: 16px;
+            width: 130px; background: rgba(15, 23, 42, 0.8); border: 1px solid var(--card-border);
+            border-radius: 8px; padding: 6px 12px; color: #818cf8; font-size: 18px;
             font-family: 'Fira Code', monospace; text-align: center; outline: none;
         }
         .capital-input-group select {
             background: rgba(15, 23, 42, 0.8); border: 1px solid var(--card-border);
-            border-radius: 8px; color: white; padding: 6px 10px; font-size: 14px; outline: none; cursor: pointer;
+            border-radius: 8px; color: white; padding: 6px 12px; font-size: 15px; outline: none; cursor: pointer;
         }
 
-        /* 四栏 1.5 倍大屏布局 */
+        /* 极大化加宽四栏布局 */
         .dashboard-layout {
             display: grid;
-            grid-template-columns: 360px 1fr 1.25fr 360px;
+            grid-template-columns: 420px 1.1fr 1.3fr 420px;
             gap: 28px;
             align-items: stretch;
         }
 
-        @media (max-width: 1650px) {
+        @media (max-width: 1700px) {
             .dashboard-layout { grid-template-columns: 1fr 1.25fr; }
             .side-panel { display: none; }
         }
@@ -135,7 +135,7 @@
         }
 
         .side-title {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 700;
             color: white;
             display: flex;
@@ -145,71 +145,72 @@
             padding-bottom: 16px;
         }
 
-        /* 左侧 Top10 排行榜 */
+        /* 左侧 Top10 加宽加高 */
         .rank-list-scroll {
             display: flex;
             flex-direction: column;
-            gap: 14px;
+            gap: 16px;
             overflow-y: auto;
-            max-height: 640px;
+            max-height: 680px;
             padding-right: 4px;
         }
 
         .rank-item {
             background: rgba(15, 23, 42, 0.65);
             border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 14px;
-            padding: 16px;
+            border-radius: 16px;
+            padding: 18px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 10px;
             position: relative;
         }
 
         .rank-top-badge {
             position: absolute;
-            right: 12px;
-            top: 12px;
-            font-size: 13px;
+            right: 14px;
+            top: 14px;
+            font-size: 14px;
             font-weight: 700;
             color: #f59e0b;
         }
 
         .rank-header { display: flex; justify-content: space-between; align-items: center; }
-        .rank-token { font-size: 17px; font-weight: 700; color: white; }
-        .rank-pnl { font-size: 17px; font-weight: 700; color: var(--accent-green); font-family: 'Fira Code', monospace; }
-        .rank-reason { font-size: 14px; color: var(--text-muted); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .rank-date { font-size: 12px; color: #64748b; }
+        .rank-token { font-size: 19px; font-weight: 700; color: white; }
+        .rank-pnl { font-size: 19px; font-weight: 700; color: var(--accent-green); font-family: 'Fira Code', monospace; }
+        .rank-reason { font-size: 15px; color: var(--text-muted); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .rank-date { font-size: 13px; color: #64748b; }
 
-        /* 右侧交易心得 */
+        /* 右侧交易心得：全面加宽防换行 */
         .mindset-input-box { display: flex; gap: 10px; }
-        .mindset-input-box input { flex: 1; padding: 12px 14px; font-size: 14px; }
+        .mindset-input-box input { flex: 1; padding: 14px 16px; font-size: 15px; }
         .btn-add-mindset {
             background: rgba(99, 102, 241, 0.25); border: 1px solid var(--card-border);
-            color: #818cf8; padding: 0 16px; border-radius: var(--radius-md); cursor: pointer; font-size: 14px; font-weight: 600;
+            color: #818cf8; padding: 0 20px; border-radius: var(--radius-md); cursor: pointer; font-size: 15px; font-weight: 600;
+            white-space: nowrap;
         }
         .btn-add-mindset:hover { background: rgba(99, 102, 241, 0.45); color: white; }
 
         .mindset-list {
-            display: flex; flex-direction: column; gap: 14px; overflow-y: auto; max-height: 580px;
+            display: flex; flex-direction: column; gap: 16px; overflow-y: auto; max-height: 620px;
         }
 
         .mindset-item {
             background: rgba(15, 23, 42, 0.65);
             border: 1px solid rgba(255,255,255,0.08);
-            border-left: 4px solid #818cf8;
-            border-radius: 12px;
-            padding: 14px 16px;
-            font-size: 15px;
+            border-left: 5px solid #818cf8;
+            border-radius: 14px;
+            padding: 16px 18px;
+            font-size: 16px;
             color: #e2e8f0;
             line-height: 1.6;
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            gap: 10px;
+            gap: 12px;
         }
 
-        .btn-del-mindset { background: none; border: none; color: #64748b; cursor: pointer; font-size: 14px; }
+        .btn-del-mindset { background: none; border: none; color: #64748b; cursor: pointer; font-size: 16px; padding: 2px; }
         .btn-del-mindset:hover { color: var(--accent-red); }
 
         .form-card {
@@ -227,15 +228,15 @@
 
         .input-group { display: flex; flex-direction: column; gap: 8px; }
         .input-group.full { grid-column: 1 / -1; }
-        label { font-size: 14px; font-weight: 600; color: var(--text-muted); }
+        label { font-size: 15px; font-weight: 600; color: var(--text-muted); }
 
         input, select, textarea {
             background: var(--input-bg);
             border: 1px solid var(--card-border);
             border-radius: var(--radius-md);
-            padding: 14px 16px;
+            padding: 16px 18px;
             color: white;
-            font-size: 15px;
+            font-size: 16px;
             outline: none;
             transition: border-color 0.2s;
         }
@@ -246,17 +247,17 @@
 
         .btn-refresh-ca {
             background: rgba(99, 102, 241, 0.2); border: 1px solid var(--card-border);
-            color: #818cf8; padding: 0 20px; border-radius: var(--radius-md);
-            cursor: pointer; font-size: 14px; font-weight: 600; display: flex;
+            color: #818cf8; padding: 0 22px; border-radius: var(--radius-md);
+            cursor: pointer; font-size: 15px; font-weight: 600; display: flex;
             align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; white-space: nowrap;
         }
         .btn-refresh-ca:hover { background: rgba(99, 102, 241, 0.4); color: white; }
 
         .btn-submit {
-            width: 100%; padding: 16px;
+            width: 100%; padding: 18px;
             background: linear-gradient(135deg, var(--primary) 0%, #4338ca 100%);
             color: white; border: none; border-radius: var(--radius-md);
-            font-weight: 600; cursor: pointer; font-size: 16px;
+            font-weight: 600; cursor: pointer; font-size: 18px;
             box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
         }
 
@@ -275,41 +276,42 @@
 
         .cal-btn {
             background: rgba(255,255,255,0.08); border: 1px solid var(--card-border);
-            color: white; padding: 8px 18px; border-radius: 10px; cursor: pointer; font-size: 14px;
+            color: white; padding: 10px 22px; border-radius: 12px; cursor: pointer; font-size: 15px;
         }
         .cal-btn:hover { background: rgba(255,255,255,0.18); }
 
         .calendar-grid {
-            display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; text-align: center; flex: 1;
+            display: grid; grid-template-columns: repeat(7, 1fr); gap: 14px; text-align: center; flex: 1;
         }
 
-        .cal-day-label { font-size: 14px; color: var(--text-muted); font-weight: 600; padding-bottom: 8px; }
+        .cal-day-label { font-size: 15px; color: var(--text-muted); font-weight: 600; padding-bottom: 10px; }
 
+        /* 1.5倍加大日历单元格 */
         .cal-day {
-            min-height: 88px;
+            min-height: 105px;
             background: rgba(15, 23, 42, 0.5);
             border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 14px;
-            padding: 10px;
+            border-radius: 16px;
+            padding: 12px;
             display: flex; flex-direction: column; justify-content: space-between; align-items: center;
-            cursor: pointer; transition: all 0.2s; font-size: 14px;
+            cursor: pointer; transition: all 0.2s; font-size: 16px;
         }
 
-        .cal-day:hover { border-color: #818cf8; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+        .cal-day:hover { border-color: #818cf8; transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.4); }
         .cal-day.empty { background: transparent; border: none; cursor: default; }
 
         .day-pnl {
-            font-size: 13px; font-weight: 700; font-family: 'Fira Code', monospace; padding: 2px 6px; border-radius: 4px;
+            font-size: 15px; font-weight: 700; font-family: 'Fira Code', monospace; padding: 4px 8px; border-radius: 6px;
         }
-        .txt-win { color: var(--accent-green); background: rgba(16, 185, 129, 0.15); }
-        .txt-loss { color: var(--accent-red); background: rgba(239, 68, 68, 0.15); }
+        .txt-win { color: var(--accent-green); background: rgba(16, 185, 129, 0.18); }
+        .txt-loss { color: var(--accent-red); background: rgba(239, 68, 68, 0.18); }
         .bg-win { background: rgba(16, 185, 129, 0.18) !important; border-color: rgba(16, 185, 129, 0.45) !important; }
         .bg-loss { background: rgba(239, 68, 68, 0.18) !important; border-color: rgba(239, 68, 68, 0.45) !important; }
 
         .backup-bar { margin-top: 32px; display: flex; justify-content: flex-end; gap: 16px; }
         .btn-backup {
             background: rgba(255, 255, 255, 0.06); border: 1px solid var(--card-border);
-            color: var(--text-muted); padding: 12px 20px; border-radius: 12px; font-size: 14px; cursor: pointer;
+            color: var(--text-muted); padding: 12px 24px; border-radius: 12px; font-size: 15px; cursor: pointer;
         }
         .btn-backup:hover { background: rgba(255, 255, 255, 0.15); color: white; }
 
@@ -322,44 +324,44 @@
         
         .modal-content {
             background: #111827; border: 1px solid var(--card-border);
-            border-radius: 28px; padding: 48px; width: 95%; max-width: 1080px;
+            border-radius: 32px; padding: 50px; width: 95%; max-width: 1150px;
             max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 60px rgba(0,0,0,0.7);
         }
 
         .modal-trade-card {
             background: rgba(30, 41, 59, 0.65); border: 1px solid var(--card-border);
-            border-radius: 20px; padding: 26px; margin-bottom: 22px; display: flex; flex-direction: column; gap: 18px;
+            border-radius: 22px; padding: 28px; margin-bottom: 24px; display: flex; flex-direction: column; gap: 20px;
         }
 
         .modal-trade-header {
             display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 14px;
+            border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 16px;
         }
 
-        .modal-token-title { font-size: 22px; font-weight: 700; color: white; display: flex; align-items: center; gap: 12px; }
-        .modal-token-meta { font-size: 15px; color: var(--text-muted); font-weight: normal; }
-        .modal-pnl-badge { font-size: 20px; font-weight: 700; font-family: 'Fira Code', monospace; padding: 6px 16px; border-radius: 10px; }
+        .modal-token-title { font-size: 24px; font-weight: 700; color: white; display: flex; align-items: center; gap: 14px; }
+        .modal-token-meta { font-size: 16px; color: var(--text-muted); font-weight: normal; }
+        .modal-pnl-badge { font-size: 22px; font-weight: 700; font-family: 'Fira Code', monospace; padding: 6px 18px; border-radius: 12px; }
 
         .modal-reason-box {
-            background: rgba(15, 23, 42, 0.7); border-radius: 12px; padding: 16px 20px; font-size: 16px; color: #f1f5f9; line-height: 1.6;
+            background: rgba(15, 23, 42, 0.7); border-radius: 14px; padding: 18px 22px; font-size: 17px; color: #f1f5f9; line-height: 1.7;
         }
 
-        .modal-meta-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+        .modal-meta-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; }
         .tag-badge {
-            display: inline-flex; align-items: center; gap: 6px; font-size: 14px; padding: 6px 14px; border-radius: 20px;
+            display: inline-flex; align-items: center; gap: 6px; font-size: 15px; padding: 6px 16px; border-radius: 20px;
             background: rgba(99, 102, 241, 0.18); border: 1px solid rgba(99, 102, 241, 0.35); color: #c7d2fe;
         }
 
         .debot-link {
-            font-size: 14px; color: #a855f7; text-decoration: none; border: 1px solid rgba(168, 85, 247, 0.4);
-            padding: 8px 16px; border-radius: 10px; display: inline-flex; align-items: center; gap: 6px;
+            font-size: 15px; color: #a855f7; text-decoration: none; border: 1px solid rgba(168, 85, 247, 0.4);
+            padding: 8px 18px; border-radius: 10px; display: inline-flex; align-items: center; gap: 6px;
             background: rgba(168, 85, 247, 0.12); font-weight: 600; transition: all 0.2s;
         }
         .debot-link:hover { background: rgba(168, 85, 247, 0.28); color: white; }
 
         .modal-btn-action {
             background: rgba(255,255,255,0.06); border: 1px solid var(--card-border);
-            color: var(--text-muted); padding: 10px 18px; border-radius: 10px; font-size: 14px; cursor: pointer; transition: all 0.2s;
+            color: var(--text-muted); padding: 10px 20px; border-radius: 12px; font-size: 15px; cursor: pointer; transition: all 0.2s;
         }
         .modal-btn-action:hover { color: white; background: rgba(255,255,255,0.15); }
         .modal-btn-del:hover { color: var(--accent-red); background: rgba(239, 68, 68, 0.2); }
@@ -391,7 +393,7 @@
 
             <div class="stat-card">
                 <div class="capital-input-group">
-                    <span style="font-size: 14px; color: var(--text-muted);">初始总本金:</span>
+                    <span style="font-size: 15px; color: var(--text-muted);">初始总本金:</span>
                     <input type="text" id="initialCapital" value="1000" onchange="saveInitialCapital()">
                     <select id="capitalUnit" onchange="saveInitialCapital()">
                         <option value="U">USDT (U)</option>
@@ -411,7 +413,7 @@
             </div>
         </div>
 
-        <!-- 四栏框架 -->
+        <!-- 4 栏铺满框架 -->
         <div class="dashboard-layout">
             
             <!-- 1. 左侧栏：盈利 TOP 10 排行榜 -->
@@ -423,9 +425,9 @@
             <!-- 2. 中间表单：录入计划/战绩 -->
             <div class="form-card">
                 <div>
-                    <h3 style="font-size: 18px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                    <h3 style="font-size: 20px; margin-bottom: 22px; display: flex; justify-content: space-between; align-items: center;">
                         ✍️ 录入交易计划 / 战绩
-                        <span style="font-size: 13px; color: #818cf8; font-weight: normal;" id="apiStatusText">支持 CA 自动填单</span>
+                        <span style="font-size: 14px; color: #818cf8; font-weight: normal;" id="apiStatusText">支持 CA 自动填单</span>
                     </h3>
                     <form id="tradeForm" onsubmit="saveTrade(event)">
                         <input type="hidden" id="editingId" value="">
@@ -491,13 +493,13 @@
             <div class="calendar-card">
                 <div class="calendar-header">
                     <button class="cal-btn" onclick="changeMonth(-1)">◀ 上个月</button>
-                    <h3 id="calendarMonthTitle" style="font-size: 18px;">2026年 8月</h3>
+                    <h3 id="calendarMonthTitle" style="font-size: 20px;">2026年 8月</h3>
                     <button class="cal-btn" onclick="changeMonth(1)">下个月 ▶</button>
                 </div>
                 <div class="calendar-grid" id="calendarGrid"></div>
             </div>
 
-            <!-- 4. 右侧栏：交易心得与铁律 -->
+            <!-- 4. 右侧栏：交易心得与铁律（大幅加宽） -->
             <div class="side-panel">
                 <div class="side-title">🧠 交易心得与铁律</div>
                 <div class="mindset-input-box">
@@ -521,28 +523,28 @@
         <div class="modal-content">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 28px; border-bottom: 1px solid var(--card-border); padding-bottom: 18px;">
                 <div>
-                    <h3 id="modalDateTitle" style="font-size: 26px; font-weight: 700;">📅 交易复盘明细</h3>
-                    <p style="font-size: 15px; color: var(--text-muted); margin-top: 6px;" id="modalDaySummary">当日战绩复盘</p>
+                    <h3 id="modalDateTitle" style="font-size: 28px; font-weight: 700;">📅 交易复盘明细</h3>
+                    <p style="font-size: 16px; color: var(--text-muted); margin-top: 6px;" id="modalDaySummary">当日战绩复盘</p>
                 </div>
-                <button onclick="closeModal()" style="background:none; border:none; color:var(--text-muted); font-size:30px; cursor:pointer;">✕</button>
+                <button onclick="closeModal()" style="background:none; border:none; color:var(--text-muted); font-size:32px; cursor:pointer;">✕</button>
             </div>
 
             <div id="modalTradeList"></div>
 
-            <div style="margin-top: 32px; display: flex; justify-content: space-between; align-items: center;">
-                <button onclick="closeModal()" class="modal-btn-action" style="padding: 12px 24px; font-size:15px;">关闭窗口</button>
-                <button onclick="generatePoster()" class="btn-submit" style="width: auto; padding: 14px 32px; font-size:16px;">📸 生成今日复盘战绩海报</button>
+            <div style="margin-top: 36px; display: flex; justify-content: space-between; align-items: center;">
+                <button onclick="closeModal()" class="modal-btn-action" style="padding: 14px 26px; font-size:16px;">关闭窗口</button>
+                <button onclick="generatePoster()" class="btn-submit" style="width: auto; padding: 16px 36px; font-size:18px;">📸 生成今日复盘战绩海报</button>
             </div>
         </div>
     </div>
 
     <!-- 海报预览弹窗 -->
     <div class="modal" id="posterModal">
-        <div class="modal-content" style="text-align: center; max-width: 580px;">
-            <h3 style="font-size: 22px; margin-bottom: 12px;">🖼️ 战绩海报生成成功</h3>
-            <p style="font-size: 14px; color: #94a3b8; margin-bottom: 22px;">右键或长按图片即可复制/保存到本地</p>
+        <div class="modal-content" style="text-align: center; max-width: 600px;">
+            <h3 style="font-size: 22px; margin-bottom: 14px;">🖼️ 战绩海报生成成功</h3>
+            <p style="font-size: 15px; color: #94a3b8; margin-bottom: 24px;">右键或长按图片即可复制/保存到本地</p>
             <img id="posterImage" style="width: 100%; border-radius: 14px; border: 1px solid var(--card-border);" src="" alt="战绩海报">
-            <button onclick="closePosterModal()" class="cal-btn" style="margin-top: 22px; width: 100%; padding: 12px; font-size:15px;">关闭</button>
+            <button onclick="closePosterModal()" class="cal-btn" style="margin-top: 24px; width: 100%; padding: 14px; font-size:16px;">关闭</button>
         </div>
     </div>
 
@@ -631,7 +633,6 @@
             renderMindsets();
         }
 
-        // 渲染左侧 TOP 10 排行榜
         function renderRankTop10() {
             const logs = getStorageData();
             const capObj = getInitialCapital();
@@ -654,7 +655,7 @@
             rankBox.innerHTML = '';
 
             if (top10.length === 0) {
-                rankBox.innerHTML = `<p style="color:#64748b; font-size:14px; text-align:center; padding:30px 0;">暂无盈利纪录，加油赚钱！</p>`;
+                rankBox.innerHTML = `<p style="color:#64748b; font-size:15px; text-align:center; padding:40px 0;">暂无盈利纪录，加油赚钱！</p>`;
                 return;
             }
 
