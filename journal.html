@@ -28,24 +28,47 @@
             background: var(--bg-gradient);
             color: var(--text-main);
             min-height: 100vh;
-            padding: 36px 24px;
+            padding: 32px 24px;
             display: flex;
             justify-content: center;
         }
 
-        .container { width: 100%; max-width: 1380px; }
+        /* 放大容器整体尺寸 */
+        .container { width: 100%; max-width: 1480px; }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
 
         .back-link {
             display: inline-flex; align-items: center; gap: 8px;
-            color: var(--text-muted); text-decoration: none; font-size: 15px; margin-bottom: 20px; font-weight: 500;
+            color: var(--text-muted); text-decoration: none; font-size: 15px; font-weight: 500;
         }
         .back-link:hover { color: #818cf8; }
+
+        /* 实时北京时间 */
+        .beijing-time {
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+            color: #818cf8;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--card-border);
+            padding: 6px 14px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
 
         .header { text-align: center; margin-bottom: 28px; }
         .header h1 {
             font-size: 32px; font-weight: 700;
             background: linear-gradient(135deg, #ffffff 0%, #c7d2fe 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            display: inline-flex; align-items: center; gap: 10px;
         }
 
         .stats-grid {
@@ -68,11 +91,12 @@
         .val-green { color: var(--accent-green); }
         .val-red { color: var(--accent-red); }
 
+        /* 修复底边不对齐：使用 stretch 居中对齐 */
         .dashboard-layout {
             display: grid;
             grid-template-columns: 1fr 1.15fr;
             gap: 28px;
-            align-items: start;
+            align-items: stretch;
         }
 
         @media (max-width: 1024px) {
@@ -86,6 +110,9 @@
             border: 1px solid var(--card-border);
             border-radius: var(--radius-lg);
             padding: 28px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .form-grid {
@@ -111,6 +138,34 @@
         }
         input:focus, textarea:focus { border-color: #818cf8; }
 
+        /* CA 输入框与刷新按钮组合 */
+        .ca-input-wrapper {
+            display: flex;
+            gap: 8px;
+        }
+        .ca-input-wrapper input { flex: 1; }
+
+        .btn-refresh-ca {
+            background: rgba(99, 102, 241, 0.2);
+            border: 1px solid var(--card-border);
+            color: #818cf8;
+            padding: 0 16px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .btn-refresh-ca:hover {
+            background: rgba(99, 102, 241, 0.4);
+            color: white;
+        }
+
         .btn-submit {
             width: 100%; padding: 14px;
             background: linear-gradient(135deg, var(--primary) 0%, #4338ca 100%);
@@ -124,12 +179,14 @@
             backdrop-filter: blur(16px);
             border: 1px solid var(--card-border);
             border-radius: var(--radius-lg);
-            padding: 24px;
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
         }
 
         .calendar-header {
             display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 18px;
+            margin-bottom: 20px;
         }
 
         .cal-btn {
@@ -139,19 +196,19 @@
         .cal-btn:hover { background: rgba(255,255,255,0.18); }
 
         .calendar-grid {
-            display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; text-align: center;
+            display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; text-align: center; flex: 1;
         }
 
         .cal-day-label { font-size: 13px; color: var(--text-muted); font-weight: 600; padding-bottom: 6px; }
 
         .cal-day {
-            height: 64px;
+            min-height: 68px;
             background: rgba(15, 23, 42, 0.5);
             border: 1px solid rgba(255,255,255,0.05);
             border-radius: 10px;
-            padding: 6px;
+            padding: 8px;
             display: flex; flex-direction: column; justify-content: space-between; align-items: center;
-            cursor: pointer; transition: all 0.2s; font-size: 12px;
+            cursor: pointer; transition: all 0.2s; font-size: 13px;
         }
 
         .cal-day:hover { border-color: #818cf8; transform: translateY(-2px); }
@@ -199,7 +256,13 @@
 <body>
 
     <div class="container">
-        <a href="index.html" class="back-link">← 🏠 返回工具箱导航</a>
+        <div class="top-bar">
+            <a href="index.html" class="back-link">← 🏠 返回工具箱导航</a>
+            <div class="beijing-time">
+                <span>🕒 北京时间:</span>
+                <strong id="clockText">00:00:00</strong>
+            </div>
+        </div>
 
         <div class="header">
             <h1>🎯 MEME 交易纪律 & 盈亏日历</h1>
@@ -215,71 +278,76 @@
                 <div class="stat-value" id="winRate">0%</div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">累计战绩状态</div>
-                <div class="stat-value" id="totalPnlStatus">--</div>
+                <div class="stat-label">累计战绩净盈亏</div>
+                <div class="stat-value" id="totalPnlStatus">0 U</div>
             </div>
         </div>
 
         <div class="dashboard-layout">
             <div class="form-card">
-                <h3 style="font-size: 17px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center;">
-                    ✍️ 录入交易计划 / 战绩
-                    <span style="font-size: 12px; color: #818cf8; font-weight: normal;" id="apiStatusText">支持 CA 自动填单</span>
-                </h3>
-                <form id="tradeForm" onsubmit="saveTrade(event)">
-                    <input type="hidden" id="editingId" value="">
-                    <div class="form-grid">
-                        <div class="input-group full">
-                            <label>合约地址 CA（粘贴后自动拉取数据 & 快捷分析）</label>
-                            <input type="text" id="tokenCA" placeholder="粘贴 Solana / EVM 代币 CA 地址..." onchange="fetchTokenDataByCA(this.value)" style="font-family: monospace;">
+                <div>
+                    <h3 style="font-size: 17px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center;">
+                        ✍️ 录入交易计划 / 战绩
+                        <span style="font-size: 12px; color: #818cf8; font-weight: normal;" id="apiStatusText">支持 CA 自动填单</span>
+                    </h3>
+                    <form id="tradeForm" onsubmit="saveTrade(event)">
+                        <input type="hidden" id="editingId" value="">
+                        <div class="form-grid">
+                            <div class="input-group full">
+                                <label>合约地址 CA（支持粘贴自动拉取数据）</label>
+                                <div class="ca-input-wrapper">
+                                    <input type="text" id="tokenCA" placeholder="粘贴 Solana / EVM 代币 CA 地址..." onchange="fetchTokenDataByCA(this.value)" style="font-family: monospace;">
+                                    <button type="button" class="btn-refresh-ca" onclick="manualRefreshCA()">🔄 刷新</button>
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label>日期</label>
+                                <input type="date" id="tradeDate" required>
+                            </div>
+                            <div class="input-group">
+                                <label>代币 Ticker</label>
+                                <input type="text" id="tokenName" placeholder="例如: $PEPE" required>
+                            </div>
+                            <div class="input-group">
+                                <label>买入市值 (MC)</label>
+                                <input type="text" id="marketCap" placeholder="例如: 150K" required>
+                            </div>
+                            <div class="input-group">
+                                <label>买入本金 (U)</label>
+                                <input type="text" id="buyAmount" placeholder="例如: 100U" required>
+                            </div>
+                            <div class="input-group">
+                                <label>交易状态</label>
+                                <select id="tradeStatus">
+                                    <option value="持仓中">⏳ 持仓中</option>
+                                    <option value="止盈">🎯 止盈 (盈利)</option>
+                                    <option value="止损">💀 止损 (亏损)</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label>最终盈亏金额 (U)</label>
+                                <input type="text" id="pnlValue" placeholder="例如: +201U 或 -10U">
+                            </div>
+                            <div class="input-group full">
+                                <label>复盘归因标签</label>
+                                <select id="tradeTag">
+                                    <option value="">无标签</option>
+                                    <option value="💀 Dev Rug/撤池">💀 Dev Rug/撤池</option>
+                                    <option value="😱 FOMO追高">😱 FOMO追高被接盘</option>
+                                    <option value="💎 钻石手卖早">💎 钻石手卖早了</option>
+                                    <option value="🤖 Smart Money跟单">🤖 Smart Money跟单</option>
+                                    <option value="🎯 严格按计划止盈止损">🎯 严格按计划执行</option>
+                                    <option value="🚀 叙事破圈爆发">🚀 叙事破圈爆发</option>
+                                </select>
+                            </div>
+                            <div class="input-group full">
+                                <label>💡 买入逻辑（为什么冲这个？写下复盘总结）</label>
+                                <textarea id="buyReason" rows="3" placeholder="写下逻辑，杜绝盲目冲狗..." required></textarea>
+                            </div>
                         </div>
-                        <div class="input-group">
-                            <label>日期</label>
-                            <input type="date" id="tradeDate" required>
-                        </div>
-                        <div class="input-group">
-                            <label>代币 Ticker</label>
-                            <input type="text" id="tokenName" placeholder="例如: $PEPE" required>
-                        </div>
-                        <div class="input-group">
-                            <label>买入市值 (MC)</label>
-                            <input type="text" id="marketCap" placeholder="例如: 150K" required>
-                        </div>
-                        <div class="input-group">
-                            <label>买入本金 (U)</label>
-                            <input type="text" id="buyAmount" placeholder="例如: 100U" required>
-                        </div>
-                        <div class="input-group">
-                            <label>交易状态</label>
-                            <select id="tradeStatus">
-                                <option value="持仓中">⏳ 持仓中</option>
-                                <option value="止盈">🎯 止盈 (盈利)</option>
-                                <option value="止损">💀 止损 (亏损)</option>
-                            </select>
-                        </div>
-                        <div class="input-group">
-                            <label>最终盈亏金额 (U)</label>
-                            <input type="text" id="pnlValue" placeholder="例如: +201U 或 -10U">
-                        </div>
-                        <div class="input-group full">
-                            <label>复盘归因标签</label>
-                            <select id="tradeTag">
-                                <option value="">无标签</option>
-                                <option value="💀 Dev Rug/撤池">💀 Dev Rug/撤池</option>
-                                <option value="😱 FOMO追高">😱 FOMO追高被接盘</option>
-                                <option value="💎 钻石手卖早">💎 钻石手卖早了</option>
-                                <option value="🤖 Smart Money跟单">🤖 Smart Money跟单</option>
-                                <option value="🎯 严格按计划止盈止损">🎯 严格按计划执行</option>
-                                <option value="🚀 叙事破圈爆发">🚀 叙事破圈爆发</option>
-                            </select>
-                        </div>
-                        <div class="input-group full">
-                            <label>💡 买入逻辑（为什么冲这个？写下复盘总结）</label>
-                            <textarea id="buyReason" rows="3" placeholder="写下逻辑，杜绝盲目冲狗..." required></textarea>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn-submit" id="submitBtn">⚡ 提交交易记录</button>
-                </form>
+                        <button type="submit" class="btn-submit" id="submitBtn">⚡ 提交交易记录</button>
+                    </form>
+                </div>
             </div>
 
             <div class="calendar-card">
@@ -329,6 +397,31 @@
         let currentDate = new Date();
         let currentActiveDateStr = '';
 
+        // 1. 实时北京时间显示逻辑
+        function updateBeijingClock() {
+            const now = new Date();
+            // 转化为北京时间 (UTC+8)
+            const options = {
+                timeZone: 'Asia/Shanghai',
+                hour12: false,
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            };
+            const formatter = new Intl.DateTimeFormat('zh-CN', options);
+            const parts = formatter.formatToParts(now);
+            const timeObj = {};
+            parts.forEach(p => timeObj[p.type] = p.value);
+
+            document.getElementById('clockText').innerText = 
+                `${timeObj.year}-${timeObj.month}-${timeObj.day} ${timeObj.hour}:${timeObj.minute}:${timeObj.second}`;
+        }
+        setInterval(updateBeijingClock, 1000);
+        updateBeijingClock();
+
         function getStorageData() {
             const data = localStorage.getItem('meme_trades_data');
             return data ? JSON.parse(data) : [];
@@ -344,7 +437,13 @@
             renderCalendar();
         }
 
-        // 调用 DexScreener API 自动识别并抓取 CA 数据
+        // 手动刷新 CA 按钮点击
+        function manualRefreshCA() {
+            const ca = document.getElementById('tokenCA').value;
+            if (ca) fetchTokenDataByCA(ca);
+        }
+
+        // 2. 调用 DexScreener API 自动识别并抓取 CA 数据
         async function fetchTokenDataByCA(ca) {
             ca = ca.trim();
             if (!ca || ca.length < 20) return;
@@ -380,14 +479,21 @@
             }
         }
 
+        // 3. 计算累计战绩具体盈利/亏损 U 数
         function updateTopStats() {
             const logs = getStorageData();
             let wins = 0;
             let losses = 0;
+            let netU = 0;
 
             logs.forEach(item => {
                 if (item.status === '止盈') wins++;
                 if (item.status === '止损') losses++;
+
+                if (item.pnl) {
+                    let num = parseFloat(item.pnl.replace(/[^0-9.-]/g, ''));
+                    if (!isNaN(num)) netU += num;
+                }
             });
 
             const total = wins + losses;
@@ -397,14 +503,14 @@
             document.getElementById('winRate').innerText = `${winRate}%`;
 
             const pnlStatus = document.getElementById('totalPnlStatus');
-            if (wins > losses) {
-                pnlStatus.innerText = "📈 总体盈利";
+            if (netU > 0) {
+                pnlStatus.innerText = `+${netU} U`;
                 pnlStatus.className = "stat-value val-green";
-            } else if (losses > wins) {
-                pnlStatus.innerText = "📉 总体亏损";
+            } else if (netU < 0) {
+                pnlStatus.innerText = `${netU} U`;
                 pnlStatus.className = "stat-value val-red";
             } else {
-                pnlStatus.innerText = "⚖️ 持平/初始化";
+                pnlStatus.innerText = `0 U`;
                 pnlStatus.className = "stat-value";
             }
         }
