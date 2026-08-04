@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MEME 交易纪律 & 盈亏日历 - 0xChiYi Tools</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📅</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎯</text></svg>">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@500;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -33,7 +33,6 @@
             justify-content: center;
         }
 
-        /* 放大容器宽度 */
         .container { width: 100%; max-width: 1380px; }
 
         .back-link {
@@ -49,7 +48,6 @@
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
 
-        /* 顶部总看板放大 */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -70,7 +68,6 @@
         .val-green { color: var(--accent-green); }
         .val-red { color: var(--accent-red); }
 
-        /* 左右双栏布局 */
         .dashboard-layout {
             display: grid;
             grid-template-columns: 1fr 1.15fr;
@@ -83,7 +80,6 @@
             .stats-grid { grid-template-columns: 1fr; }
         }
 
-        /* 录入表单面板放大 */
         .form-card {
             background: var(--card-bg);
             backdrop-filter: blur(16px);
@@ -123,7 +119,6 @@
             box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
         }
 
-        /* 日历面板放大与调整 */
         .calendar-card {
             background: var(--card-bg);
             backdrop-filter: blur(16px);
@@ -162,24 +157,31 @@
         .cal-day:hover { border-color: #818cf8; transform: translateY(-2px); }
         .cal-day.empty { background: transparent; border: none; cursor: default; }
 
-        /* 显示真实的 +201U 或 -10U 样式 */
         .day-pnl { font-size: 11px; font-weight: 700; font-family: 'Fira Code', monospace; }
         .txt-win { color: var(--accent-green); }
         .txt-loss { color: var(--accent-red); }
         .bg-win { background: rgba(16, 185, 129, 0.18) !important; border-color: rgba(16, 185, 129, 0.4) !important; }
         .bg-loss { background: rgba(239, 68, 68, 0.18) !important; border-color: rgba(239, 68, 68, 0.4) !important; }
 
-        /* 备份操作栏 */
-        .backup-bar {
-            margin-top: 28px; display: flex; justify-content: flex-end; gap: 14px;
+        .tag-badge {
+            display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 12px;
+            background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: #cbd5e1;
+            margin-right: 4px; margin-top: 4px;
         }
+
+        .quick-link {
+            font-size: 11px; color: #818cf8; text-decoration: none; margin-right: 8px; border: 1px solid rgba(129, 140, 248, 0.3);
+            padding: 2px 6px; border-radius: 4px; display: inline-flex; align-items: center; gap: 2px;
+        }
+        .quick-link:hover { background: rgba(129, 140, 248, 0.2); }
+
+        .backup-bar { margin-top: 28px; display: flex; justify-content: flex-end; gap: 14px; }
         .btn-backup {
             background: rgba(255, 255, 255, 0.06); border: 1px solid var(--card-border);
             color: var(--text-muted); padding: 10px 16px; border-radius: 10px; font-size: 13px; cursor: pointer;
         }
         .btn-backup:hover { background: rgba(255, 255, 255, 0.15); color: white; }
 
-        /* 弹窗 Modal 放大 */
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.75); backdrop-filter: blur(8px);
@@ -190,6 +192,8 @@
             border-radius: var(--radius-lg); padding: 28px; width: 92%; max-width: 650px;
             max-height: 85vh; overflow-y: auto;
         }
+
+        #posterCanvas { display: none; }
     </style>
 </head>
 <body>
@@ -201,7 +205,6 @@
             <h1>🎯 MEME 交易纪律 & 盈亏日历</h1>
         </div>
 
-        <!-- 顶部总看板 -->
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-label">累计胜单 / 亏单</div>
@@ -217,18 +220,19 @@
             </div>
         </div>
 
-        <!-- Dashboard 双栏 -->
         <div class="dashboard-layout">
-            
-            <!-- 左侧：录入表单（加大） -->
             <div class="form-card">
                 <h3 style="font-size: 17px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center;">
                     ✍️ 录入交易计划 / 战绩
-                    <span style="font-size: 12px; color: #818cf8; font-weight: normal;">今日限 3 次</span>
+                    <span style="font-size: 12px; color: #818cf8; font-weight: normal;" id="apiStatusText">支持 CA 自动填单</span>
                 </h3>
                 <form id="tradeForm" onsubmit="saveTrade(event)">
-                    <input type="hidden" id="editingId" value=""> <!-- 用于编辑功能 -->
+                    <input type="hidden" id="editingId" value="">
                     <div class="form-grid">
+                        <div class="input-group full">
+                            <label>合约地址 CA（粘贴后自动拉取数据 & 快捷分析）</label>
+                            <input type="text" id="tokenCA" placeholder="粘贴 Solana / EVM 代币 CA 地址..." onchange="fetchTokenDataByCA(this.value)" style="font-family: monospace;">
+                        </div>
                         <div class="input-group">
                             <label>日期</label>
                             <input type="date" id="tradeDate" required>
@@ -258,7 +262,19 @@
                             <input type="text" id="pnlValue" placeholder="例如: +201U 或 -10U">
                         </div>
                         <div class="input-group full">
-                            <label>💡 买入逻辑（为什么冲这个？是 Smart Money 进场还是 FOMO？）</label>
+                            <label>复盘归因标签</label>
+                            <select id="tradeTag">
+                                <option value="">无标签</option>
+                                <option value="💀 Dev Rug/撤池">💀 Dev Rug/撤池</option>
+                                <option value="😱 FOMO追高">😱 FOMO追高被接盘</option>
+                                <option value="💎 钻石手卖早">💎 钻石手卖早了</option>
+                                <option value="🤖 Smart Money跟单">🤖 Smart Money跟单</option>
+                                <option value="🎯 严格按计划止盈止损">🎯 严格按计划执行</option>
+                                <option value="🚀 叙事破圈爆发">🚀 叙事破圈爆发</option>
+                            </select>
+                        </div>
+                        <div class="input-group full">
+                            <label>💡 买入逻辑（为什么冲这个？写下复盘总结）</label>
                             <textarea id="buyReason" rows="3" placeholder="写下逻辑，杜绝盲目冲狗..." required></textarea>
                         </div>
                     </div>
@@ -266,29 +282,24 @@
                 </form>
             </div>
 
-            <!-- 右侧：紧凑战绩日历 -->
             <div class="calendar-card">
                 <div class="calendar-header">
                     <button class="cal-btn" onclick="changeMonth(-1)">◀ 上个月</button>
                     <h3 id="calendarMonthTitle" style="font-size: 17px;">2026年 8月</h3>
                     <button class="cal-btn" onclick="changeMonth(1)">下个月 ▶</button>
                 </div>
-                <div class="calendar-grid" id="calendarGrid">
-                    <!-- 动态生成 -->
-                </div>
+                <div class="calendar-grid" id="calendarGrid"></div>
             </div>
-
         </div>
 
-        <!-- 备份功能 -->
         <div class="backup-bar">
-            <button class="btn-backup" onclick="exportData()">📤 导出跨设备备份 (JSON)</button>
+            <button class="btn-backup" onclick="exportData()">📤 导出备份 (JSON)</button>
             <button class="btn-backup" onclick="document.getElementById('importFile').click()">📥 导入备份数据</button>
             <input type="file" id="importFile" style="display: none;" onchange="importData(event)" accept=".json">
         </div>
     </div>
 
-    <!-- 每日明细弹窗 -->
+    <!-- 弹窗 Modal -->
     <div class="modal" id="dayModal">
         <div class="modal-content">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
@@ -296,11 +307,27 @@
                 <button onclick="closeModal()" style="background:none; border:none; color:white; font-size:20px; cursor:pointer;">✕</button>
             </div>
             <div id="modalTradeList"></div>
+            <div style="margin-top: 20px; text-align: right;">
+                <button onclick="generatePoster()" class="btn-submit" style="width: auto; padding: 10px 20px;">📸 生成今日复盘战绩海报</button>
+            </div>
         </div>
     </div>
 
+    <!-- 海报预览弹窗 -->
+    <div class="modal" id="posterModal">
+        <div class="modal-content" style="text-align: center; max-width: 500px;">
+            <h3 style="font-size: 16px; margin-bottom: 12px;">🖼️ 战绩海报生成成功</h3>
+            <p style="font-size: 12px; color: #94a3b8; margin-bottom: 16px;">右键或长按图片即可复制/保存到本地</p>
+            <img id="posterImage" style="width: 100%; border-radius: 12px; border: 1px solid var(--card-border);" src="" alt="战绩海报">
+            <button onclick="closePosterModal()" class="cal-btn" style="margin-top: 16px; width: 100%; padding: 10px;">关闭</button>
+        </div>
+    </div>
+
+    <canvas id="posterCanvas" width="600" height="800"></canvas>
+
     <script>
         let currentDate = new Date();
+        let currentActiveDateStr = '';
 
         function getStorageData() {
             const data = localStorage.getItem('meme_trades_data');
@@ -315,6 +342,42 @@
             document.getElementById('tradeDate').value = new Date().toISOString().split('T')[0];
             updateTopStats();
             renderCalendar();
+        }
+
+        // 调用 DexScreener API 自动识别并抓取 CA 数据
+        async function fetchTokenDataByCA(ca) {
+            ca = ca.trim();
+            if (!ca || ca.length < 20) return;
+
+            const statusText = document.getElementById('apiStatusText');
+            statusText.innerText = "⏳ 正在拉取 DexScreener 数据...";
+            statusText.style.color = "#818cf8";
+
+            try {
+                const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${ca}`);
+                const data = await res.json();
+
+                if (data && data.pairs && data.pairs.length > 0) {
+                    const pair = data.pairs[0];
+                    const symbol = pair.baseToken.symbol || '';
+                    const fdv = pair.fdv || pair.marketCap || 0;
+
+                    if (symbol) document.getElementById('tokenName').value = `$${symbol}`;
+                    if (fdv) {
+                        let formattedMC = fdv >= 1000000 ? `${(fdv/1000000).toFixed(2)}M` : `${Math.round(fdv/1000)}K`;
+                        document.getElementById('marketCap').value = formattedMC;
+                    }
+
+                    statusText.innerText = "✅ 已自动填入代币数据！";
+                    statusText.style.color = "#10b981";
+                } else {
+                    statusText.innerText = "⚠️ 未在 DEX 找到该 CA 数据";
+                    statusText.style.color = "#ef4444";
+                }
+            } catch (err) {
+                statusText.innerText = "❌ 抓取超时，请手动填写";
+                statusText.style.color = "#ef4444";
+            }
         }
 
         function updateTopStats() {
@@ -346,7 +409,6 @@
             }
         }
 
-        // 渲染日历（显示具体 +201U / -10U）
         function renderCalendar() {
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
@@ -383,7 +445,6 @@
 
                     dayTrades.forEach(t => {
                         if (t.pnl) {
-                            // 解析填入的 +201U 或 -10U 里的数字
                             let num = parseFloat(t.pnl.replace(/[^0-9.-]/g, ''));
                             if (!isNaN(num)) {
                                 totalDayU += num;
@@ -425,7 +486,6 @@
             renderCalendar();
         }
 
-        // 保存/更新交易
         function saveTrade(e) {
             e.preventDefault();
             let logs = getStorageData();
@@ -434,39 +494,40 @@
             const tradeData = {
                 id: editingId ? parseInt(editingId) : Date.now(),
                 date: document.getElementById('tradeDate').value,
+                ca: document.getElementById('tokenCA').value.trim(),
                 token: document.getElementById('tokenName').value.trim(),
                 mc: document.getElementById('marketCap').value.trim(),
                 buyAmount: document.getElementById('buyAmount').value.trim(),
                 status: document.getElementById('tradeStatus').value,
                 pnl: document.getElementById('pnlValue').value.trim() || '未结算',
+                tag: document.getElementById('tradeTag').value,
                 reason: document.getElementById('buyReason').value.trim()
             };
 
             if (editingId) {
-                // 更新现有记录
                 logs = logs.map(l => l.id === parseInt(editingId) ? tradeData : l);
                 document.getElementById('editingId').value = '';
                 document.getElementById('submitBtn').innerText = '⚡ 提交交易记录';
             } else {
-                // 提交新记录
                 logs.unshift(tradeData);
             }
 
             setStorageData(logs);
 
-            // 清空表单
+            document.getElementById('tokenCA').value = '';
             document.getElementById('tokenName').value = '';
             document.getElementById('marketCap').value = '';
             document.getElementById('buyAmount').value = '';
             document.getElementById('pnlValue').value = '';
             document.getElementById('buyReason').value = '';
+            document.getElementById('tradeTag').value = '';
 
             updateTopStats();
             renderCalendar();
         }
 
-        // 打开弹窗
         function openDayModal(dateStr) {
+            currentActiveDateStr = dateStr;
             document.getElementById('modalDateTitle').innerText = `📅 ${dateStr} 交易复盘明细`;
             const logs = getStorageData();
             const dayTrades = logs.filter(l => l.date === dateStr);
@@ -480,7 +541,19 @@
                 dayTrades.forEach(item => {
                     let badge = item.status === '止盈' ? '<span class="txt-win">🎯 止盈</span>' :
                                 (item.status === '止损' ? '<span class="txt-loss">💀 止损</span>' : '⏳ 持仓中');
+                    let tagHtml = item.tag ? `<span class="tag-badge">${item.tag}</span>` : '';
                     
+                    let caLinks = '';
+                    if (item.ca) {
+                        caLinks = `
+                            <div style="margin-top: 6px;">
+                                <a href="https://dexscreener.com/search?q=${item.ca}" target="_blank" class="quick-link">📈 DexScreener</a>
+                                <a href="https://gmgn.ai/sol/token/${item.ca}" target="_blank" class="quick-link">🤖 GMGN</a>
+                                <a href="https://rugcheck.xyz/tokens/${item.ca}" target="_blank" class="quick-link">🛡️ RugCheck</a>
+                            </div>
+                        `;
+                    }
+
                     modalList.innerHTML += `
                         <div style="background:rgba(15, 23, 42, 0.7); padding:14px; border-radius:10px; margin-bottom:12px; border:1px solid rgba(255,255,255,0.08);">
                             <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:14px;">
@@ -488,6 +561,8 @@
                                 <div>${badge} (<strong style="font-family:monospace;">${item.pnl}</strong>)</div>
                             </div>
                             <div style="font-size:13px; color:#cbd5e1; line-height:1.5;">💡 逻辑: ${item.reason}</div>
+                            ${tagHtml}
+                            ${caLinks}
                             <div style="margin-top:10px; display:flex; gap:12px;">
                                 <button onclick="editTrade(${item.id})" style="background:none; border:none; color:#818cf8; font-size:12px; cursor:pointer;">✏️ 编辑修改</button>
                                 <button onclick="deleteTrade(${item.id}, '${dateStr}')" style="background:none; border:none; color:#ef4444; font-size:12px; cursor:pointer;">🗑️ 删除</button>
@@ -500,7 +575,6 @@
             document.getElementById('dayModal').style.display = 'flex';
         }
 
-        // 点击编辑，回填表单
         function editTrade(id) {
             const logs = getStorageData();
             const item = logs.find(l => l.id === id);
@@ -508,11 +582,13 @@
 
             document.getElementById('editingId').value = item.id;
             document.getElementById('tradeDate').value = item.date;
+            document.getElementById('tokenCA').value = item.ca || '';
             document.getElementById('tokenName').value = item.token;
             document.getElementById('marketCap').value = item.mc;
             document.getElementById('buyAmount').value = item.buyAmount || '';
             document.getElementById('tradeStatus').value = item.status;
             document.getElementById('pnlValue').value = item.pnl;
+            document.getElementById('tradeTag').value = item.tag || '';
             document.getElementById('buyReason').value = item.reason;
 
             document.getElementById('submitBtn').innerText = '✨ 保存修改后的记录';
@@ -524,6 +600,10 @@
             document.getElementById('dayModal').style.display = 'none';
         }
 
+        function closePosterModal() {
+            document.getElementById('posterModal').style.display = 'none';
+        }
+
         function deleteTrade(id, dateStr) {
             if(confirm("确定删除这条记录？")) {
                 let logs = getStorageData();
@@ -533,6 +613,101 @@
                 renderCalendar();
                 openDayModal(dateStr);
             }
+        }
+
+        function generatePoster() {
+            const canvas = document.getElementById('posterCanvas');
+            const ctx = canvas.getContext('2d');
+            const logs = getStorageData();
+            const dayTrades = logs.filter(l => l.date === currentActiveDateStr);
+
+            let grad = ctx.createLinearGradient(0, 0, 0, 800);
+            grad.addColorStop(0, '#0f172a');
+            grad.addColorStop(1, '#1e1b4b');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, 600, 800);
+
+            ctx.fillStyle = '#818cf8';
+            ctx.font = 'bold 20px Inter, sans-serif';
+            ctx.fillText('0xChiYi Web3 MEME Journal', 40, 50);
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 28px Inter, sans-serif';
+            ctx.fillText(`📅 ${currentActiveDateStr} 实战复盘`, 40, 95);
+
+            let totalDayU = 0;
+            dayTrades.forEach(t => {
+                if (t.pnl) {
+                    let num = parseFloat(t.pnl.replace(/[^0-9.-]/g, ''));
+                    if (!isNaN(num)) totalDayU += num;
+                }
+            });
+
+            ctx.fillStyle = 'rgba(30, 41, 59, 0.8)';
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.roundRect(40, 120, 520, 100, 12);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '14px Inter, sans-serif';
+            ctx.fillText('当日战绩结果', 60, 155);
+
+            ctx.font = 'bold 36px Fira Code, monospace';
+            if (totalDayU > 0) {
+                ctx.fillStyle = '#10b981';
+                ctx.fillText(`+${totalDayU} U`, 60, 200);
+            } else if (totalDayU < 0) {
+                ctx.fillStyle = '#ef4444';
+                ctx.fillText(`${totalDayU} U`, 60, 200);
+            } else {
+                ctx.fillStyle = '#ffffff';
+                ctx.fillText(`0 U`, 60, 200);
+            }
+
+            let startY = 250;
+            dayTrades.slice(0, 3).forEach((item) => {
+                ctx.fillStyle = 'rgba(15, 23, 42, 0.7)';
+                ctx.beginPath();
+                ctx.roundRect(40, startY, 520, 140, 12);
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 16px Inter, sans-serif';
+                ctx.fillText(`${item.token} (买入: ${item.buyAmount || '--'} | MC: ${item.mc})`, 60, startY + 35);
+
+                ctx.fillStyle = item.status === '止盈' ? '#10b981' : '#ef4444';
+                ctx.font = 'bold 16px Fira Code, monospace';
+                ctx.fillText(`${item.pnl}`, 460, startY + 35);
+
+                ctx.fillStyle = '#cbd5e1';
+                ctx.font = '13px Inter, sans-serif';
+                ctx.fillText(`💡 逻辑: ${item.reason.substring(0, 30)}...`, 60, startY + 75);
+
+                if (item.tag) {
+                    ctx.fillStyle = 'rgba(99, 102, 241, 0.3)';
+                    ctx.beginPath();
+                    ctx.roundRect(60, startY + 95, 140, 26, 6);
+                    ctx.fill();
+
+                    ctx.fillStyle = '#c7d2fe';
+                    ctx.font = '11px Inter, sans-serif';
+                    ctx.fillText(item.tag, 70, startY + 112);
+                }
+
+                startY += 160;
+            });
+
+            ctx.fillStyle = '#64748b';
+            ctx.font = '12px Inter, sans-serif';
+            ctx.fillText('Powered by 0xChiYi Web3 Tools | 管住手·胜率高', 40, 770);
+
+            const imgUrl = canvas.toDataURL('image/png');
+            document.getElementById('posterImage').src = imgUrl;
+            document.getElementById('posterModal').style.display = 'flex';
         }
 
         function exportData() {
