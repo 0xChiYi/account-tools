@@ -349,7 +349,6 @@
         }
         .btn-backup:hover { background: rgba(255, 255, 255, 0.15); color: white; }
 
-        /* Modal 弹窗 */
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(12px);
@@ -790,7 +789,7 @@
             }
         }
 
-        // 修复胜率匹配 Bug（兼容带 Emoji 的字符串）
+        // 彻底修复胜率自动智能识别逻辑
         function updateTopStats() {
             const logs = getStorageData();
             const capObj = getInitialCapital();
@@ -801,12 +800,18 @@
             let netU = 0;
 
             logs.forEach(item => {
-                if (item.status && item.status.includes('止盈')) wins++;
-                if (item.status && item.status.includes('止损')) losses++;
-
+                let num = 0;
                 if (item.pnl) {
-                    let num = parseFloat(item.pnl.replace(/[^0-9.-]/g, ''));
+                    num = parseFloat(item.pnl.replace(/[^0-9.-]/g, ''));
                     if (!isNaN(num)) netU += num;
+                }
+
+                // 优先根据选择的状态识别，如果选了持仓但有盈亏数字，自动识别正负！
+                let st = item.status || '';
+                if (st.includes('止盈') || (!isNaN(num) && num > 0)) {
+                    wins++;
+                } else if (st.includes('止损') || (!isNaN(num) && num < 0)) {
+                    losses++;
                 }
             });
 
@@ -814,7 +819,7 @@
             const winRate = total > 0 ? ((wins / total) * 100).toFixed(1) : 0;
 
             document.getElementById('winRate').innerText = `${winRate}%`;
-            document.getElementById('winLossCount').innerText = `${wins} 胜 / ${losses} 负 (共 ${total} 笔单)`;
+            document.getElementById('winLossCount').innerText = `${wins} 胜 / ${losses} 负 (共 ${total} 笔平仓单)`;
 
             const currentCap = capObj.val + netU;
             const returnRatio = capObj.val > 0 ? ((netU / capObj.val) * 100).toFixed(1) : 0;
@@ -929,6 +934,18 @@
             const editingId = document.getElementById('editingId').value;
             const capObj = getInitialCapital();
 
+            let rawPnl = document.getElementById('pnlValue').value.trim();
+            let rawStatus = document.getElementById('tradeStatus').value;
+
+            // 如果盈亏金额填了数字，但状态还是持仓中，自动给修正成止盈或止损
+            if (rawPnl) {
+                let pnlNum = parseFloat(rawPnl.replace(/[^0-9.-]/g, ''));
+                if (!isNaN(pnlNum)) {
+                    if (pnlNum > 0 && rawStatus === '持仓中') rawStatus = '止盈';
+                    if (pnlNum < 0 && rawStatus === '持仓中') rawStatus = '止损';
+                }
+            }
+
             const tradeData = {
                 id: editingId ? parseInt(editingId) : Date.now(),
                 date: document.getElementById('tradeDate').value,
@@ -937,8 +954,8 @@
                 mc: document.getElementById('marketCap').value.trim(),
                 buyAmount: document.getElementById('buyAmount').value.trim(),
                 unit: capObj.unit,
-                status: document.getElementById('tradeStatus').value,
-                pnl: document.getElementById('pnlValue').value.trim() || '未结算',
+                status: rawStatus,
+                pnl: rawPnl || '未结算',
                 tag: document.getElementById('tradeTag').value,
                 reason: document.getElementById('buyReason').value.trim()
             };
@@ -992,8 +1009,12 @@
                 modalList.innerHTML = `<p style="color:#64748b; text-align:center; padding: 50px 0; font-size:18px;">这一天没有任何交易，管住手非常棒！</p>`;
             } else {
                 dayTrades.forEach(item => {
-                    let statusBadgeClass = item.status && item.status.includes('止盈') ? 'txt-win' : (item.status && item.status.includes('止损') ? 'txt-loss' : '');
-                    let badgeText = item.status && item.status.includes('止盈') ? '🎯 止盈' : (item.status && item.status.includes('止损') ? '💀 止损' : '⏳ 持仓中');
+                    let pnlNum = parseFloat((item.pnl||'').replace(/[^0-9.-]/g, ''));
+                    let isWin = (item.status && item.status.includes('止盈')) || (!isNaN(pnlNum) && pnlNum > 0);
+                    let isLoss = (item.status && item.status.includes('止损')) || (!isNaN(pnlNum) && pnlNum < 0);
+
+                    let statusBadgeClass = isWin ? 'txt-win' : (isLoss ? 'txt-loss' : '');
+                    let badgeText = isWin ? '🎯 止盈' : (isLoss ? '💀 止损' : '⏳ 持仓中');
                     
                     let tagHtml = item.tag ? `<span class="tag-badge">🏷️ ${item.tag}</span>` : '';
                     let caLinks = '';
@@ -1145,7 +1166,10 @@
                 ctx.font = 'bold 16px Inter, sans-serif';
                 ctx.fillText(`${item.token} (买入: ${item.buyAmount || '--'} ${unit} | MC: ${item.mc})`, 60, startY + 35);
 
-                ctx.fillStyle = item.status && item.status.includes('止盈') ? '#10b981' : '#ef4444';
+                let pnlNum = parseFloat((item.pnl||'').replace(/[^0-9.-]/g, ''));
+                let isWin = (item.status && item.status.includes('止盈')) || (!isNaN(pnlNum) && pnlNum > 0);
+
+                ctx.fillStyle = isWin ? '#10b981' : '#ef4444';
                 ctx.font = 'bold 16px Fira Code, monospace';
                 ctx.fillText(`${item.pnl} ${unit}`, 440, startY + 35);
 
