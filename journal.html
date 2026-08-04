@@ -104,22 +104,29 @@
         .capital-input-group {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
             margin-bottom: 8px;
         }
         .capital-input-group input {
-            width: 110px;
+            width: 100px;
             background: rgba(15, 23, 42, 0.8);
             border: 1px solid var(--card-border);
             border-radius: 6px;
             padding: 4px 8px;
             color: #818cf8;
-            font-size: 13px;
+            font-size: 14px;
             font-family: 'Fira Code', monospace;
             text-align: center;
             outline: none;
         }
-        .capital-input-group input:focus { border-color: #818cf8; }
+        .capital-input-group select {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--card-border);
+            border-radius: 6px;
+            color: white;
+            padding: 4px 6px;
+            font-size: 13px;
+        }
 
         .dashboard-layout {
             display: grid;
@@ -168,6 +175,13 @@
             transition: border-color 0.2s;
         }
         input:focus, textarea:focus { border-color: #818cf8; }
+
+        .unit-input-group {
+            display: flex;
+            gap: 8px;
+        }
+        .unit-input-group input { flex: 1; }
+        .unit-input-group select { width: 90px; }
 
         .ca-input-wrapper { display: flex; gap: 10px; }
         .ca-input-wrapper input { flex: 1; }
@@ -239,7 +253,7 @@
         .cal-day.empty { background: transparent; border: none; cursor: default; }
 
         .day-pnl {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 700;
             font-family: 'Fira Code', monospace;
             padding: 2px 6px;
@@ -335,7 +349,6 @@
             background: rgba(99, 102, 241, 0.18); border: 1px solid rgba(99, 102, 241, 0.35); color: #c7d2fe;
         }
 
-        /* 专门改为 DEBOT 按钮 */
         .debot-link {
             font-size: 15px; color: #a855f7; text-decoration: none; border: 1px solid rgba(168, 85, 247, 0.4);
             padding: 8px 18px; border-radius: 10px; display: inline-flex; align-items: center; gap: 6px;
@@ -379,8 +392,13 @@
             <div class="stat-card">
                 <div class="capital-input-group">
                     <span style="font-size: 13px; color: var(--text-muted);">初始总本金:</span>
-                    <input type="text" id="initialCapital" value="1000" onchange="saveInitialCapital(this.value)">
-                    <span style="font-size: 13px; color: var(--text-muted);">U</span>
+                    <input type="text" id="initialCapital" value="1000" onchange="saveInitialCapital()">
+                    <select id="capitalUnit" onchange="saveInitialCapital()">
+                        <option value="U">USDT (U)</option>
+                        <option value="BNB">BNB</option>
+                        <option value="SOL">SOL</option>
+                        <option value="ETH">ETH</option>
+                    </select>
                 </div>
                 <div class="stat-value" id="currentCapital">1000 U</div>
                 <div class="stat-subtext" id="capitalChangeRatio">动态资金池 (收益率: 0%)</div>
@@ -406,7 +424,7 @@
                             <div class="input-group full">
                                 <label>合约地址 CA（支持粘贴自动拉取数据）</label>
                                 <div class="ca-input-wrapper">
-                                    <input type="text" id="tokenCA" placeholder="粘贴 Solana / EVM 代币 CA 地址..." onchange="fetchTokenDataByCA(this.value)" style="font-family: monospace;">
+                                    <input type="text" id="tokenCA" placeholder="粘贴 Solana / BSC / ETH 代币 CA 地址..." onchange="fetchTokenDataByCA(this.value)" style="font-family: monospace;">
                                     <button type="button" class="btn-refresh-ca" onclick="manualRefreshCA()">🔄 刷新</button>
                                 </div>
                             </div>
@@ -423,8 +441,16 @@
                                 <input type="text" id="marketCap" placeholder="例如: 150K" required>
                             </div>
                             <div class="input-group">
-                                <label>买入本金 (U)</label>
-                                <input type="text" id="buyAmount" placeholder="例如: 100U" required>
+                                <label>买入本金</label>
+                                <div class="unit-input-group">
+                                    <input type="text" id="buyAmount" placeholder="例如: 0.5" required>
+                                    <select id="buyUnit">
+                                        <option value="BNB">BNB</option>
+                                        <option value="U">U</option>
+                                        <option value="SOL">SOL</option>
+                                        <option value="ETH">ETH</option>
+                                    </select>
+                                </div>
                             </div>
                             <div class="input-group">
                                 <label>交易状态</label>
@@ -435,8 +461,16 @@
                                 </select>
                             </div>
                             <div class="input-group">
-                                <label>最终盈亏金额 (U)</label>
-                                <input type="text" id="pnlValue" placeholder="例如: +201U 或 -10U">
+                                <label>最终盈亏金额</label>
+                                <div class="unit-input-group">
+                                    <input type="text" id="pnlValue" placeholder="例如: +2.3 或 -0.5">
+                                    <select id="pnlUnit">
+                                        <option value="BNB">BNB</option>
+                                        <option value="U">U</option>
+                                        <option value="SOL">SOL</option>
+                                        <option value="ETH">ETH</option>
+                                    </select>
+                                </div>
                             </div>
                             <div class="input-group full">
                                 <label>复盘归因标签</label>
@@ -547,20 +581,28 @@
 
         function getInitialCapital() {
             const cap = localStorage.getItem('meme_initial_capital');
-            return cap ? parseFloat(cap) : 1000;
+            const unit = localStorage.getItem('meme_initial_unit') || 'BNB';
+            return {
+                val: cap ? parseFloat(cap) : 10,
+                unit: unit
+            };
         }
 
-        function saveInitialCapital(val) {
-            const num = parseFloat(val);
+        function saveInitialCapital() {
+            const num = parseFloat(document.getElementById('initialCapital').value);
+            const unit = document.getElementById('capitalUnit').value;
             if (!isNaN(num) && num >= 0) {
                 localStorage.setItem('meme_initial_capital', num);
+                localStorage.setItem('meme_initial_unit', unit);
                 updateTopStats();
             }
         }
 
         function init() {
             document.getElementById('tradeDate').value = new Date().toISOString().split('T')[0];
-            document.getElementById('initialCapital').value = getInitialCapital();
+            const capObj = getInitialCapital();
+            document.getElementById('initialCapital').value = capObj.val;
+            document.getElementById('capitalUnit').value = capObj.unit;
             updateTopStats();
             renderCalendar();
         }
@@ -609,7 +651,7 @@
             const logs = getStorageData();
             let wins = 0;
             let losses = 0;
-            let netU = 0;
+            let netMap = {}; // 按币种分类统计盈亏
 
             logs.forEach(item => {
                 if (item.status === '止盈') wins++;
@@ -617,7 +659,10 @@
 
                 if (item.pnl) {
                     let num = parseFloat(item.pnl.replace(/[^0-9.-]/g, ''));
-                    if (!isNaN(num)) netU += num;
+                    let unit = item.pnlUnit || 'BNB';
+                    if (!isNaN(num)) {
+                        netMap[unit] = (netMap[unit] || 0) + num;
+                    }
                 }
             });
 
@@ -627,15 +672,17 @@
             document.getElementById('winRate').innerText = `${winRate}%`;
             document.getElementById('winLossCount').innerText = `${wins} 胜 / ${losses} 负 (共 ${total} 笔单)`;
 
-            const initCap = getInitialCapital();
-            const currentCap = initCap + netU;
-            const returnRatio = initCap > 0 ? ((netU / initCap) * 100).toFixed(1) : 0;
+            const capObj = getInitialCapital();
+            const mainUnit = capObj.unit;
+            const mainNet = netMap[mainUnit] || 0;
+            const currentCap = capObj.val + mainNet;
+            const returnRatio = capObj.val > 0 ? ((mainNet / capObj.val) * 100).toFixed(1) : 0;
 
             const currCapEl = document.getElementById('currentCapital');
-            currCapEl.innerText = `${currentCap.toFixed(1)} U`;
-            if (netU > 0) {
+            currCapEl.innerText = `${currentCap.toFixed(2)} ${mainUnit}`;
+            if (mainNet > 0) {
                 currCapEl.className = "stat-value val-green";
-            } else if (netU < 0) {
+            } else if (mainNet < 0) {
                 currCapEl.className = "stat-value val-red";
             } else {
                 currCapEl.className = "stat-value";
@@ -643,15 +690,18 @@
 
             document.getElementById('capitalChangeRatio').innerText = `动态资金池 (收益率: ${returnRatio >= 0 ? '+' : ''}${returnRatio}%)`;
 
+            // 展示主币种净盈亏
             const pnlStatus = document.getElementById('totalPnlStatus');
-            if (netU > 0) {
-                pnlStatus.innerText = `+${netU} U`;
-                pnlStatus.className = "stat-value val-green";
-            } else if (netU < 0) {
-                pnlStatus.innerText = `${netU} U`;
-                pnlStatus.className = "stat-value val-red";
+            let pnlStrList = [];
+            for (let u in netMap) {
+                let val = netMap[u];
+                pnlStrList.push(`${val >= 0 ? '+' : ''}${val.toFixed(2)} ${u}`);
+            }
+            if (pnlStrList.length > 0) {
+                pnlStatus.innerText = pnlStrList.join(" | ");
+                pnlStatus.className = mainNet >= 0 ? "stat-value val-green" : "stat-value val-red";
             } else {
-                pnlStatus.innerText = `0 U`;
+                pnlStatus.innerText = `0 ${mainUnit}`;
                 pnlStatus.className = "stat-value";
             }
         }
@@ -687,31 +737,31 @@
                 let txtClass = '';
 
                 if (dayTrades.length > 0) {
-                    let totalDayU = 0;
+                    let dayNetMap = {};
                     let hasSettled = false;
 
                     dayTrades.forEach(t => {
                         if (t.pnl) {
                             let num = parseFloat(t.pnl.replace(/[^0-9.-]/g, ''));
+                            let unit = t.pnlUnit || 'BNB';
                             if (!isNaN(num)) {
-                                totalDayU += num;
+                                dayNetMap[unit] = (dayNetMap[unit] || 0) + num;
                                 hasSettled = true;
                             }
                         }
                     });
 
                     if (hasSettled) {
-                        if (totalDayU > 0) {
-                            bgClass = 'bg-win';
-                            txtClass = 'txt-win';
-                            pnlText = `+${totalDayU}U`;
-                        } else if (totalDayU < 0) {
-                            bgClass = 'bg-loss';
-                            txtClass = 'txt-loss';
-                            pnlText = `${totalDayU}U`;
-                        } else {
-                            pnlText = `0U`;
+                        let strList = [];
+                        let firstVal = 0;
+                        for (let u in dayNetMap) {
+                            let val = dayNetMap[u];
+                            strList.push(`${val >= 0 ? '+' : ''}${val}${u}`);
+                            firstVal = val;
                         }
+                        pnlText = strList.join(" ");
+                        if (firstVal > 0) { bgClass = 'bg-win'; txtClass = 'txt-win'; }
+                        else if (firstVal < 0) { bgClass = 'bg-loss'; txtClass = 'txt-loss'; }
                     } else {
                         pnlText = `🚀 ${dayTrades.length}笔`;
                     }
@@ -745,8 +795,10 @@
                 token: document.getElementById('tokenName').value.trim(),
                 mc: document.getElementById('marketCap').value.trim(),
                 buyAmount: document.getElementById('buyAmount').value.trim(),
+                buyUnit: document.getElementById('buyUnit').value,
                 status: document.getElementById('tradeStatus').value,
                 pnl: document.getElementById('pnlValue').value.trim() || '未结算',
+                pnlUnit: document.getElementById('pnlUnit').value,
                 tag: document.getElementById('tradeTag').value,
                 reason: document.getElementById('buyReason').value.trim()
             };
@@ -779,16 +831,23 @@
             const logs = getStorageData();
             const dayTrades = logs.filter(l => l.date === dateStr);
 
-            let dayTotalU = 0;
+            let dayNetMap = {};
             dayTrades.forEach(t => {
                 if (t.pnl) {
                     let num = parseFloat(t.pnl.replace(/[^0-9.-]/g, ''));
-                    if (!isNaN(num)) dayTotalU += num;
+                    let unit = t.pnlUnit || 'BNB';
+                    if (!isNaN(num)) dayNetMap[unit] = (dayNetMap[unit] || 0) + num;
                 }
             });
 
+            let strList = [];
+            for (let u in dayNetMap) {
+                let val = dayNetMap[u];
+                strList.push(`${val >= 0 ? '+' : ''}${val} ${u}`);
+            }
+
             document.getElementById('modalDaySummary').innerText = 
-                `共交易 ${dayTrades.length} 笔单 | 今日累计净战绩: ${dayTotalU >= 0 ? '+' : ''}${dayTotalU} U`;
+                `共交易 ${dayTrades.length} 笔单 | 当日战绩: ${strList.length > 0 ? strList.join(" | ") : '无结算'}`;
 
             const modalList = document.getElementById('modalTradeList');
             modalList.innerHTML = '';
@@ -801,8 +860,6 @@
                     let badgeText = item.status === '止盈' ? '🎯 止盈' : (item.status === '止损' ? '💀 止损' : '⏳ 持仓中');
                     
                     let tagHtml = item.tag ? `<span class="tag-badge">🏷️ ${item.tag}</span>` : '';
-                    
-                    // 改为 DEBOT 单一快捷链接
                     let caLinks = '';
                     if (item.ca) {
                         caLinks = `
@@ -810,15 +867,18 @@
                         `;
                     }
 
+                    let buyUnitStr = item.buyUnit || 'BNB';
+                    let pnlUnitStr = item.pnlUnit || 'BNB';
+
                     modalList.innerHTML += `
                         <div class="modal-trade-card">
                             <div class="modal-trade-header">
                                 <div class="modal-token-title">
                                     <span>${item.token}</span>
-                                    <span class="modal-token-meta">买入本金: ${item.buyAmount || '未填'} | 买入MC: ${item.mc}</span>
+                                    <span class="modal-token-meta">买入本金: ${item.buyAmount || '未填'} ${buyUnitStr} | 买入MC: ${item.mc}</span>
                                 </div>
                                 <div class="modal-pnl-badge ${statusBadgeClass}">
-                                    ${badgeText} (${item.pnl})
+                                    ${badgeText} (${item.pnl} ${pnlUnitStr})
                                 </div>
                             </div>
                             
@@ -854,8 +914,10 @@
             document.getElementById('tokenName').value = item.token;
             document.getElementById('marketCap').value = item.mc;
             document.getElementById('buyAmount').value = item.buyAmount || '';
+            if (item.buyUnit) document.getElementById('buyUnit').value = item.buyUnit;
             document.getElementById('tradeStatus').value = item.status;
             document.getElementById('pnlValue').value = item.pnl;
+            if (item.pnlUnit) document.getElementById('pnlUnit').value = item.pnlUnit;
             document.getElementById('tradeTag').value = item.tag || '';
             document.getElementById('buyReason').value = item.reason;
 
@@ -903,13 +965,20 @@
             ctx.font = 'bold 28px Inter, sans-serif';
             ctx.fillText(`📅 ${currentActiveDateStr} 实战复盘`, 40, 95);
 
-            let totalDayU = 0;
+            let dayNetMap = {};
             dayTrades.forEach(t => {
                 if (t.pnl) {
                     let num = parseFloat(t.pnl.replace(/[^0-9.-]/g, ''));
-                    if (!isNaN(num)) totalDayU += num;
+                    let unit = t.pnlUnit || 'BNB';
+                    if (!isNaN(num)) dayNetMap[unit] = (dayNetMap[unit] || 0) + num;
                 }
             });
+
+            let strList = [];
+            for (let u in dayNetMap) {
+                let val = dayNetMap[u];
+                strList.push(`${val >= 0 ? '+' : ''}${val} ${u}`);
+            }
 
             ctx.fillStyle = 'rgba(30, 41, 59, 0.8)';
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
@@ -923,17 +992,9 @@
             ctx.font = '14px Inter, sans-serif';
             ctx.fillText('当日战绩结果', 60, 155);
 
-            ctx.font = 'bold 36px Fira Code, monospace';
-            if (totalDayU > 0) {
-                ctx.fillStyle = '#10b981';
-                ctx.fillText(`+${totalDayU} U`, 60, 200);
-            } else if (totalDayU < 0) {
-                ctx.fillStyle = '#ef4444';
-                ctx.fillText(`${totalDayU} U`, 60, 200);
-            } else {
-                ctx.fillStyle = '#ffffff';
-                ctx.fillText(`0 U`, 60, 200);
-            }
+            ctx.font = 'bold 30px Fira Code, monospace';
+            ctx.fillStyle = '#10b981';
+            ctx.fillText(strList.length > 0 ? strList.join(" | ") : '0 BNB', 60, 200);
 
             let startY = 250;
             dayTrades.slice(0, 3).forEach((item) => {
@@ -945,11 +1006,11 @@
 
                 ctx.fillStyle = '#ffffff';
                 ctx.font = 'bold 16px Inter, sans-serif';
-                ctx.fillText(`${item.token} (买入: ${item.buyAmount || '--'} | MC: ${item.mc})`, 60, startY + 35);
+                ctx.fillText(`${item.token} (买入: ${item.buyAmount || '--'} ${item.buyUnit||'BNB'} | MC: ${item.mc})`, 60, startY + 35);
 
                 ctx.fillStyle = item.status === '止盈' ? '#10b981' : '#ef4444';
                 ctx.font = 'bold 16px Fira Code, monospace';
-                ctx.fillText(`${item.pnl}`, 460, startY + 35);
+                ctx.fillText(`${item.pnl} ${item.pnlUnit||'BNB'}`, 440, startY + 35);
 
                 ctx.fillStyle = '#cbd5e1';
                 ctx.font = '13px Inter, sans-serif';
