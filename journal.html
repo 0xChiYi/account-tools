@@ -106,10 +106,9 @@
         }
         .capital-input-group select {
             background: rgba(15, 23, 42, 0.8); border: 1px solid var(--card-border);
-            border-radius: 8px; color: white; padding: 6px 10px; font-size: 14px; outline: none; cursor: pointer;
+            border-radius: 8px; color: white; padding: 6px 10px; font-size: 15px; outline: none; cursor: pointer;
         }
 
-        /* 黄金比例：左右两侧加宽至 420px，中间按比例收紧 */
         .dashboard-layout {
             display: grid;
             grid-template-columns: 420px 0.95fr 1.05fr 420px;
@@ -144,7 +143,6 @@
             padding-bottom: 16px;
         }
 
-        /* 加宽左侧 Top10 排行榜 */
         .rank-list-scroll {
             display: flex;
             flex-direction: column;
@@ -219,7 +217,6 @@
             border-radius: 8px;
         }
 
-        /* 加宽右侧交易心得与铁律 */
         .mindset-input-box { display: flex; gap: 10px; }
         .mindset-input-box input { flex: 1; padding: 12px 14px; font-size: 14px; }
         .btn-add-mindset {
@@ -433,24 +430,23 @@
                     <span style="font-size: 15px; color: var(--text-muted);">初始总本金:</span>
                     <input type="text" id="initialCapital" value="1000" onchange="saveInitialCapital()">
                     <select id="capitalUnit" onchange="saveInitialCapital()">
-                        <option value="U">USDT (U)</option>
+                        <option value="USDT">USDT</option>
                         <option value="BNB">BNB</option>
                         <option value="SOL">SOL</option>
                         <option value="ETH">ETH</option>
                     </select>
                 </div>
-                <div class="stat-value" id="currentCapital">1000 U</div>
+                <div class="stat-value" id="currentCapital">1000 USDT</div>
                 <div class="stat-subtext" id="capitalChangeRatio">动态资金池 (收益率: 0%)</div>
             </div>
 
             <div class="stat-card">
                 <div class="stat-label">累计战绩净盈亏</div>
-                <div class="stat-value" id="totalPnlStatus">0 U</div>
+                <div class="stat-value" id="totalPnlStatus">0 USDT</div>
                 <div class="stat-subtext">根据历史已结算订单自动汇总</div>
             </div>
         </div>
 
-        <!-- 4 栏铺满框架 -->
         <div class="dashboard-layout">
             
             <!-- 1. 左侧栏：盈利 TOP 10 排行榜 -->
@@ -489,7 +485,7 @@
                                 <input type="text" id="marketCap" placeholder="例如: 150K" required>
                             </div>
                             <div class="input-group">
-                                <label id="labelBuyAmount">买入本金 (U)</label>
+                                <label id="labelBuyAmount">买入本金 (USDT)</label>
                                 <input type="text" id="buyAmount" placeholder="例如: 100" required>
                             </div>
                             <div class="input-group">
@@ -501,7 +497,7 @@
                                 </select>
                             </div>
                             <div class="input-group">
-                                <label id="labelPnlValue">最终盈亏金额 (U)</label>
+                                <label id="labelPnlValue">最终盈亏金额 (USDT)</label>
                                 <input type="text" id="pnlValue" placeholder="例如: +201 或 -10">
                             </div>
                             <div class="input-group full">
@@ -717,10 +713,10 @@
 
         function getInitialCapital() {
             const cap = localStorage.getItem('meme_initial_capital');
-            const unit = localStorage.getItem('meme_initial_unit') || 'U';
+            const unit = localStorage.getItem('meme_initial_unit') || 'USDT';
             return {
                 val: cap ? parseFloat(cap) : 1000,
-                unit: unit
+                unit: unit === 'U' ? 'USDT' : unit
             };
         }
 
@@ -794,6 +790,7 @@
             }
         }
 
+        // 修复胜率匹配 Bug（兼容带 Emoji 的字符串）
         function updateTopStats() {
             const logs = getStorageData();
             const capObj = getInitialCapital();
@@ -804,8 +801,8 @@
             let netU = 0;
 
             logs.forEach(item => {
-                if (item.status === '止盈') wins++;
-                if (item.status === '止损') losses++;
+                if (item.status && item.status.includes('止盈')) wins++;
+                if (item.status && item.status.includes('止损')) losses++;
 
                 if (item.pnl) {
                     let num = parseFloat(item.pnl.replace(/[^0-9.-]/g, ''));
@@ -995,8 +992,8 @@
                 modalList.innerHTML = `<p style="color:#64748b; text-align:center; padding: 50px 0; font-size:18px;">这一天没有任何交易，管住手非常棒！</p>`;
             } else {
                 dayTrades.forEach(item => {
-                    let statusBadgeClass = item.status === '止盈' ? 'txt-win' : (item.status === '止损' ? 'txt-loss' : '');
-                    let badgeText = item.status === '止盈' ? '🎯 止盈' : (item.status === '止损' ? '💀 止损' : '⏳ 持仓中');
+                    let statusBadgeClass = item.status && item.status.includes('止盈') ? 'txt-win' : (item.status && item.status.includes('止损') ? 'txt-loss' : '');
+                    let badgeText = item.status && item.status.includes('止盈') ? '🎯 止盈' : (item.status && item.status.includes('止损') ? '💀 止损' : '⏳ 持仓中');
                     
                     let tagHtml = item.tag ? `<span class="tag-badge">🏷️ ${item.tag}</span>` : '';
                     let caLinks = '';
@@ -1148,7 +1145,7 @@
                 ctx.font = 'bold 16px Inter, sans-serif';
                 ctx.fillText(`${item.token} (买入: ${item.buyAmount || '--'} ${unit} | MC: ${item.mc})`, 60, startY + 35);
 
-                ctx.fillStyle = item.status === '止盈' ? '#10b981' : '#ef4444';
+                ctx.fillStyle = item.status && item.status.includes('止盈') ? '#10b981' : '#ef4444';
                 ctx.font = 'bold 16px Fira Code, monospace';
                 ctx.fillText(`${item.pnl} ${unit}`, 440, startY + 35);
 
@@ -1200,7 +1197,7 @@
                     const importedData = JSON.parse(event.target.result);
                     if (Array.isArray(importedData)) {
                         setStorageData(importedData);
-                        alert("✅ 数据导入成功！");
+                        alert("✅ 导入成功！");
                         init();
                     } else {
                         alert("❌ 格式错误！");
