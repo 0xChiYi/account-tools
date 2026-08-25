@@ -77,6 +77,42 @@
             padding: 28px;
         }
 
+        /* 智能一键粘贴解析栏 */
+        .smart-parse-box {
+            background: rgba(99, 102, 241, 0.12);
+            border: 1px solid rgba(99, 102, 241, 0.35);
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .smart-input-row {
+            display: flex;
+            gap: 8px;
+        }
+        .smart-input-row input {
+            flex: 1;
+            padding: 10px 12px;
+            font-size: 14px;
+            background: rgba(15, 23, 42, 0.85);
+            border-color: rgba(99, 102, 241, 0.4);
+        }
+        .btn-parse {
+            background: #6366f1;
+            border: none;
+            color: white;
+            padding: 0 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+        .btn-parse:hover { background: #4f46e5; }
+
         .input-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
         label { font-size: 14px; font-weight: 600; color: var(--text-muted); }
 
@@ -119,7 +155,6 @@
             gap: 24px;
         }
 
-        /* 枪械主卡片 */
         .weapon-hub-card {
             background: rgba(15, 23, 42, 0.7);
             border: 1px solid var(--card-border);
@@ -141,7 +176,6 @@
             color: #c7d2fe; padding: 4px 10px; border-radius: 8px; font-weight: 600;
         }
 
-        /* 方案分级选择 Tab 栏 */
         .build-tabs-nav {
             display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px;
         }
@@ -164,7 +198,6 @@
         .build-tab-btn.active-high { background: rgba(168, 85, 247, 0.2); border-color: rgba(168, 85, 247, 0.5); color: #c084fc; }
         .build-tab-btn.active-spec { background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.5); color: #f87171; }
 
-        /* 方案展示区域 */
         .build-display-content {
             background: rgba(0, 0, 0, 0.35);
             border: 1px solid rgba(255, 255, 255, 0.06);
@@ -252,7 +285,20 @@
         <div class="layout-grid">
             <!-- 左侧录入表单 -->
             <div class="panel-card">
-                <h3 style="font-size: 18px; margin-bottom: 18px; color: white;" id="formTitle">✍️ 录入 / 追加改枪方案</h3>
+                <h3 style="font-size: 18px; margin-bottom: 14px; color: white;" id="formTitle">✍️ 录入 / 追加改枪方案</h3>
+
+                <!-- 智能一键解析器 -->
+                <div class="smart-parse-box">
+                    <label style="font-size:12px; color:#c7d2fe; display:flex; justify-content:space-between;">
+                        <span>⚡ 游戏分享文本一键识别</span>
+                        <span style="color:#94a3b8;">粘贴自动拆分</span>
+                    </label>
+                    <div class="smart-input-row">
+                        <input type="text" id="smartInput" placeholder="例如: MK4冲锋枪-烽火地带-6KVE2280CDJAD6F4GCK57" oninput="autoSmartParse(this.value)">
+                        <button type="button" class="btn-parse" onclick="autoSmartParse(document.getElementById('smartInput').value)">自动填单</button>
+                    </div>
+                </div>
+
                 <form id="gunForm" onsubmit="saveGunBuild(event)">
                     <input type="hidden" id="editingWeaponName" value="">
                     <input type="hidden" id="editingBuildIndex" value="">
@@ -286,7 +332,7 @@
 
                     <div class="input-group">
                         <label>方案命名 (可选备注)</label>
-                        <input type="text" id="buildTitle" placeholder="例如: 35W三连发高开镜 / 烽火静音半改">
+                        <input type="text" id="buildTitle" placeholder="例如: 烽火地带静音 / 35W腰射秒人">
                     </div>
 
                     <div class="input-group">
@@ -332,29 +378,78 @@
 
     <script>
         let currentFilter = '全部';
-        // 记录每把枪当前选中的方案索引
         let activeBuildIndexMap = {};
+
+        // 智能解析标准分享格式: MK4冲锋枪-烽火地带-6KVE2280CDJAD6F4GCK57
+        function autoSmartParse(text) {
+            text = text.trim();
+            if (!text || !text.includes('-')) return;
+
+            const parts = text.split('-');
+            if (parts.length >= 3) {
+                let rawGun = parts[0].trim();
+                let rawMode = parts[1].trim();
+                let rawCode = parts.slice(2).join('-').trim();
+
+                // 识别枪系分类并清洗枪名
+                let detectedType = "突击步枪";
+                let cleanGunName = rawGun;
+
+                if (rawGun.includes("冲锋枪")) {
+                    detectedType = "冲锋枪";
+                    cleanGunName = rawGun.replace(/冲锋枪/g, '').trim();
+                } else if (rawGun.includes("突击步枪") || rawGun.includes("步枪")) {
+                    detectedType = "突击步枪";
+                    cleanGunName = rawGun.replace(/(突击)?步枪/g, '').trim();
+                } else if (rawGun.includes("射手步枪") || rawGun.includes("连狙")) {
+                    detectedType = "射手步枪";
+                    cleanGunName = rawGun.replace(/(射手步枪|连狙)/g, '').trim();
+                } else if (rawGun.includes("狙击") || rawGun.includes("栓动")) {
+                    detectedType = "狙击步枪";
+                    cleanGunName = rawGun.replace(/(狙击步枪|狙击枪|栓动)/g, '').trim();
+                } else if (rawGun.includes("机枪")) {
+                    detectedType = "轻机枪";
+                    cleanGunName = rawGun.replace(/(轻)?机枪/g, '').trim();
+                } else if (rawGun.includes("手枪") || rawGun.includes("霰弹")) {
+                    detectedType = "霰弹枪/手枪";
+                }
+
+                // 识别改装等级与场景
+                let levelVal = "🟡 中改 (烽火进阶/均衡)";
+                if (rawMode.includes("烽火") || rawMode.includes("摸金")) {
+                    levelVal = "🟡 中改 (烽火进阶/均衡)";
+                } else if (rawMode.includes("全面") || rawMode.includes("高配") || rawMode.includes("顶配")) {
+                    levelVal = "🟣 高改 (全面战场/极致满配)";
+                } else if (rawMode.includes("跑刀") || rawMode.includes("低改") || rawMode.includes("性价比")) {
+                    levelVal = "🟢 低改 (跑刀/摸金性价比)";
+                } else if (rawMode.includes("腰射") || rawMode.includes("特化")) {
+                    levelVal = "🔴 战术特化 (腰射/远距离架枪)";
+                }
+
+                // 自动填入表单
+                document.getElementById('gunType').value = detectedType;
+                document.getElementById('gunName').value = cleanGunName || rawGun;
+                document.getElementById('buildLevel').value = levelVal;
+                document.getElementById('buildTitle').value = rawMode;
+                document.getElementById('gunCode').value = rawCode;
+                document.getElementById('gunTags').value = `${rawMode}, ${cleanGunName}`;
+                document.getElementById('gunDesc').value = `来自游戏一键分享：【${rawGun}】适用【${rawMode}】`;
+            }
+        }
 
         function getStorageData() {
             const data = localStorage.getItem('delta_weapons_hub');
             return data ? JSON.parse(data) : [
                 {
                     name: "MK4",
-                    type: "突击步枪",
+                    type: "冲锋枪",
                     builds: [
                         {
-                            level: "🟢 低改 (跑刀/摸金性价比)",
-                            title: "摸金性价比版",
-                            code: "MK4-LOW-BUDGET-6688",
-                            tags: ["低造价", "腰射控枪"],
-                            desc: "保留基础枪机，加装基础握把与红点，成本极低，适合跑刀摸金打人机。"
-                        },
-                        {
-                            level: "🟣 高改 (全面战场/极致满配)",
-                            title: "三连发腰射秒人流",
-                            code: "6K5HI880EU900684DBQL5",
-                            tags: ["极致腰射", "全面战场", "爆发拉满"],
-                            desc: "极限压低腰射散布，装备高精枪管与战术握把，近战三连发瞬间蒸发甲胄。"
+                            level: "🟡 中改 (烽火进阶/均衡)",
+                            title: "烽火地带",
+                            code: "6KVE2280CDJAD6F4GCK57",
+                            tags: ["烽火地带", "MK4", "均衡控枪"],
+                            desc: "来自游戏一键分享：【MK4冲锋枪】适用【烽火地带】"
                         }
                     ]
                 },
@@ -362,13 +457,6 @@
                     name: "M4A1",
                     type: "突击步枪",
                     builds: [
-                        {
-                            level: "🟡 中改 (烽火进阶/均衡)",
-                            title: "烽火消音稳定版",
-                            code: "M4A1-667788-MID-PRO",
-                            tags: ["消音隐蔽", "中距离压制"],
-                            desc: "配置重型消音器与加长护木，兼顾隐蔽性与中远距离弹道稳定性。"
-                        },
                         {
                             level: "🟣 高改 (全面战场/极致满配)",
                             title: "全面战场激光枪",
@@ -400,7 +488,7 @@
             const filtered = currentFilter === '全部' ? weapons : weapons.filter(w => w.type === currentFilter);
 
             if (filtered.length === 0) {
-                container.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #64748b; padding: 40px 0;">暂无该类型枪械方案，在左侧录入第一套方案吧！</p>`;
+                container.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #64748b; padding: 40px 0;">暂无该类型枪械方案，在左侧一键解析录入吧！</p>`;
                 return;
             }
 
@@ -411,7 +499,6 @@
                 const activeIndex = activeBuildIndexMap[weapon.name];
                 const curBuild = weapon.builds[activeIndex] || weapon.builds[0];
 
-                // 生成 Tab 标签栏
                 let tabsHtml = '';
                 weapon.builds.forEach((b, idx) => {
                     const isActive = idx === activeIndex;
@@ -424,7 +511,6 @@
                     `;
                 });
 
-                // 生成当前方案的 Tag
                 let tagsHtml = (curBuild.tags || []).map(t => `<span class="meta-tag">🏷️ ${t.trim()}</span>`).join('');
 
                 container.innerHTML += `
@@ -437,10 +523,8 @@
                             <span class="hub-type-tag">${weapon.type}</span>
                         </div>
 
-                        <!-- 方案切换 Tab 栏 -->
                         <div class="build-tabs-nav">${tabsHtml}</div>
 
-                        <!-- 当前选中的方案详情 -->
                         <div class="build-display-content">
                             <div style="display:flex; justify-content:space-between; align-items:center;">
                                 <strong style="font-size:15px; color:white;">${curBuild.title || curBuild.level}</strong>
@@ -497,7 +581,6 @@
             const newBuild = { level, title, code, tags, desc };
 
             if (editingWeaponName !== "") {
-                // 编辑现有方案
                 const wIdx = weapons.findIndex(w => w.name === editingWeaponName);
                 if (wIdx !== -1) {
                     weapons[wIdx].builds[parseInt(editingBuildIndex)] = newBuild;
@@ -505,7 +588,6 @@
                 }
                 resetForm();
             } else {
-                // 新增或追加
                 const existIndex = weapons.findIndex(w => w.name.toUpperCase() === gunName.toUpperCase());
                 if (existIndex !== -1) {
                     weapons[existIndex].builds.push(newBuild);
@@ -519,6 +601,7 @@
                     activeBuildIndexMap[gunName] = 0;
                 }
                 document.getElementById('gunForm').reset();
+                document.getElementById('smartInput').value = '';
             }
 
             setStorageData(weapons);
@@ -554,7 +637,7 @@
                 if (wIdx !== -1) {
                     weapons[wIdx].builds.splice(index, 1);
                     if (weapons[wIdx].builds.length === 0) {
-                        weapons.splice(wIdx, 1); // 如果该枪所有方案都删除了，直接移除这把枪
+                        weapons.splice(wIdx, 1);
                     }
                     setStorageData(weapons);
                     activeBuildIndexMap[weaponName] = 0;
@@ -569,6 +652,7 @@
             document.getElementById('formTitle').innerText = '✍️ 录入 / 追加改枪方案';
             document.getElementById('submitBtn').innerText = '⚡ 保存至枪械方案库';
             document.getElementById('gunForm').reset();
+            document.getElementById('smartInput').value = '';
         }
 
         function copyCode(code, btn) {
