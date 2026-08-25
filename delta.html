@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>三角洲行动 · 改枪码与配装库 - 0xChiYi Tools</title>
+    <title>三角洲行动 · 战术配装与改枪库 - 0xChiYi Tools</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔫</text></svg>">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@500;700&display=swap" rel="stylesheet">
     <style>
@@ -17,6 +17,7 @@
             --input-bg: rgba(15, 23, 42, 0.65);
             --accent-green: #10b981;
             --accent-gold: #f59e0b;
+            --accent-purple: #a855f7;
             --accent-red: #ef4444;
             --radius-lg: 24px;
             --radius-md: 14px;
@@ -34,7 +35,7 @@
             justify-content: center;
         }
 
-        .container { width: 98vw; max-width: 2200px; }
+        .container { width: 98vw; max-width: 2400px; }
 
         .top-bar {
             display: flex;
@@ -51,10 +52,10 @@
 
         .header { text-align: center; margin-bottom: 28px; }
         .header h1 {
-            font-size: 38px; font-weight: 700;
+            font-size: 40px; font-weight: 700;
             background: linear-gradient(135deg, #ffffff 0%, #c7d2fe 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            display: inline-flex; align-items: center; gap: 12px;
+            display: inline-flex; align-items: center; gap: 14px;
         }
 
         .layout-grid {
@@ -64,7 +65,7 @@
             align-items: start;
         }
 
-        @media (max-width: 1200px) {
+        @media (max-width: 1400px) {
             .layout-grid { grid-template-columns: 1fr; }
         }
 
@@ -100,67 +101,104 @@
         }
 
         .filter-bar {
-            display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;
+            display: flex; gap: 10px; margin-bottom: 24px; flex-wrap: wrap;
         }
 
         .btn-filter {
             background: rgba(15, 23, 42, 0.6); border: 1px solid var(--card-border);
-            color: var(--text-muted); padding: 8px 16px; border-radius: 20px; font-size: 14px;
+            color: var(--text-muted); padding: 8px 18px; border-radius: 20px; font-size: 14px;
             cursor: pointer; transition: all 0.2s;
         }
         .btn-filter.active, .btn-filter:hover {
             background: #818cf8; color: white; border-color: #818cf8;
         }
 
-        .code-grid {
+        .weapon-cards-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(440px, 1fr));
+            gap: 24px;
         }
 
-        .weapon-card {
-            background: rgba(15, 23, 42, 0.65);
+        /* 枪械主卡片 */
+        .weapon-hub-card {
+            background: rgba(15, 23, 42, 0.7);
             border: 1px solid var(--card-border);
-            border-radius: 18px;
-            padding: 22px;
+            border-radius: 20px;
+            padding: 24px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            position: relative;
+            gap: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
-        .weapon-header {
+        .hub-header {
             display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 12px;
         }
-        .weapon-name { font-size: 20px; font-weight: 700; color: white; }
-        .weapon-type-tag {
+        .hub-title { font-size: 22px; font-weight: 700; color: white; display: flex; align-items: center; gap: 10px; }
+        .hub-type-tag {
             font-size: 12px; background: rgba(99, 102, 241, 0.2); border: 1px solid rgba(99, 102, 241, 0.4);
             color: #c7d2fe; padding: 4px 10px; border-radius: 8px; font-weight: 600;
         }
 
-        .code-box {
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px dashed rgba(255, 255, 255, 0.15);
+        /* 方案分级选择 Tab 栏 */
+        .build-tabs-nav {
+            display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px;
+        }
+        .build-tab-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-muted);
+            padding: 6px 14px;
             border-radius: 10px;
-            padding: 12px;
+            font-size: 13px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+        .build-tab-btn:hover { background: rgba(255,255,255,0.15); color: white; }
+        
+        .build-tab-btn.active-low { background: rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.5); color: #10b981; }
+        .build-tab-btn.active-mid { background: rgba(245, 158, 11, 0.2); border-color: rgba(245, 158, 11, 0.5); color: #f59e0b; }
+        .build-tab-btn.active-high { background: rgba(168, 85, 247, 0.2); border-color: rgba(168, 85, 247, 0.5); color: #c084fc; }
+        .build-tab-btn.active-spec { background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.5); color: #f87171; }
+
+        /* 方案展示区域 */
+        .build-display-content {
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .code-box {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px dashed rgba(56, 189, 248, 0.4);
+            border-radius: 10px;
+            padding: 10px 14px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
 
         .code-text {
             font-family: 'Fira Code', monospace;
             color: #38bdf8;
-            font-size: 14px;
+            font-size: 15px;
+            font-weight: 600;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
 
         .btn-copy {
-            background: rgba(56, 189, 248, 0.15);
-            border: 1px solid rgba(56, 189, 248, 0.3);
+            background: rgba(56, 189, 248, 0.2);
+            border: 1px solid rgba(56, 189, 248, 0.4);
             color: #38bdf8;
             padding: 6px 14px;
             border-radius: 8px;
@@ -172,19 +210,18 @@
         }
         .btn-copy:hover { background: #38bdf8; color: black; }
 
-        .tag-row { display: flex; gap: 6px; flex-wrap: wrap; }
-        .tag-pill {
-            font-size: 11px; background: rgba(245, 158, 11, 0.15); color: #f59e0b;
-            border: 1px solid rgba(245, 158, 11, 0.3); padding: 2px 8px; border-radius: 6px;
+        .meta-tags-row { display: flex; gap: 6px; flex-wrap: wrap; }
+        .meta-tag {
+            font-size: 11px; background: rgba(255, 255, 255, 0.08); color: #cbd5e1;
+            padding: 2px 8px; border-radius: 6px;
         }
 
-        .desc-box {
-            font-size: 13px; color: var(--text-muted); line-height: 1.5;
-            background: rgba(15, 23, 42, 0.4); padding: 10px; border-radius: 8px;
+        .build-desc {
+            font-size: 13px; color: #94a3b8; line-height: 1.6;
         }
 
         .action-bar {
-            display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 10px;
+            display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 10px;
         }
         .btn-sm {
             background: none; border: none; font-size: 13px; cursor: pointer; color: var(--text-muted);
@@ -192,7 +229,7 @@
         .btn-sm:hover { color: white; }
         .btn-del:hover { color: var(--accent-red); }
 
-        .backup-bar { margin-top: 24px; display: flex; justify-content: flex-end; gap: 14px; }
+        .backup-bar { margin-top: 32px; display: flex; justify-content: flex-end; gap: 14px; }
         .btn-backup {
             background: rgba(255, 255, 255, 0.06); border: 1px solid var(--card-border);
             color: var(--text-muted); padding: 10px 18px; border-radius: 10px; font-size: 14px; cursor: pointer;
@@ -205,19 +242,20 @@
     <div class="container">
         <div class="top-bar">
             <a href="index.html" class="back-link">← 🏠 返回工具箱导航</a>
-            <span style="color: var(--text-muted); font-size: 14px;">🎯 三角洲行动 · 战术配装管理库</span>
+            <span style="color: var(--text-muted); font-size: 14px;">🎯 三角洲行动 · 枪械多级配装方案库</span>
         </div>
 
         <div class="header">
-            <h1>🔫 三角洲行动 · 改枪码 & 方案库</h1>
+            <h1>🔫 三角洲行动 · 枪械全级方案库</h1>
         </div>
 
         <div class="layout-grid">
-            <!-- 左侧：录入与修改表单 -->
+            <!-- 左侧录入表单 -->
             <div class="panel-card">
-                <h3 style="font-size: 18px; margin-bottom: 18px; color: white;" id="formTitle">✍️ 录入新改枪方案</h3>
-                <form id="gunForm" onsubmit="saveGun(event)">
-                    <input type="hidden" id="editingId" value="">
+                <h3 style="font-size: 18px; margin-bottom: 18px; color: white;" id="formTitle">✍️ 录入 / 追加改枪方案</h3>
+                <form id="gunForm" onsubmit="saveGunBuild(event)">
+                    <input type="hidden" id="editingWeaponName" value="">
+                    <input type="hidden" id="editingBuildIndex" value="">
                     
                     <div class="input-group">
                         <label>枪械类型</label>
@@ -232,8 +270,23 @@
                     </div>
 
                     <div class="input-group">
-                        <label>枪械名称 (型号)</label>
-                        <input type="text" id="gunName" placeholder="例如: M4A1 / RCX-Spear / AS Val" required>
+                        <label>枪械型号 (已存在的枪会自动追加方案)</label>
+                        <input type="text" id="gunName" placeholder="例如: MK4 / M4A1 / Vector / AS Val" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label>改装等级 / 适用定位</label>
+                        <select id="buildLevel" required>
+                            <option value="🟢 低改 (跑刀/摸金性价比)">🟢 低改 (跑刀/摸金性价比)</option>
+                            <option value="🟡 中改 (烽火进阶/均衡)">🟡 中改 (烽火进阶/均衡)</option>
+                            <option value="🟣 高改 (全面战场/极致满配)">🟣 高改 (全面战场/极致满配)</option>
+                            <option value="🔴 战术特化 (腰射/远距离架枪)">🔴 战术特化 (腰射/远距离架枪)</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label>方案命名 (可选备注)</label>
+                        <input type="text" id="buildTitle" placeholder="例如: 35W三连发高开镜 / 烽火静音半改">
                     </div>
 
                     <div class="input-group">
@@ -242,20 +295,20 @@
                     </div>
 
                     <div class="input-group">
-                        <label>适用场景 / 风格标签</label>
-                        <input type="text" id="gunTags" placeholder="例如: 全面战场, 极致压枪, 烽火跑刀 (逗号分隔)">
+                        <label>风格特性标签 (逗号分隔)</label>
+                        <input type="text" id="gunTags" placeholder="例如: 极致开镜, 微后座, 隐蔽消音, 75发大弹鼓">
                     </div>
 
                     <div class="input-group">
-                        <label>改枪思路 / 核心配件说明</label>
-                        <textarea id="gunDesc" rows="4" placeholder="写下搭配逻辑（如：加装重型消音、长枪管提升初速，专打中远距离...）"></textarea>
+                        <label>配件搭配思路与压枪心得</label>
+                        <textarea id="gunDesc" rows="3" placeholder="写下搭配逻辑（如：换装加长枪管增加有效射程，精校后坐力补偿...）"></textarea>
                     </div>
 
-                    <button type="submit" class="btn-submit" id="submitBtn">⚡ 保存改枪方案</button>
+                    <button type="submit" class="btn-submit" id="submitBtn">⚡ 保存至枪械方案库</button>
                 </form>
             </div>
 
-            <!-- 右侧：方案展示与筛选列表 -->
+            <!-- 右侧聚合卡片列表 -->
             <div class="panel-card">
                 <div class="filter-bar">
                     <button class="btn-filter active" onclick="filterType('全部')">全部展示</button>
@@ -266,7 +319,7 @@
                     <button class="btn-filter" onclick="filterType('轻机枪')">轻机枪</button>
                 </div>
 
-                <div class="code-grid" id="gunList"></div>
+                <div class="weapon-cards-grid" id="weaponCardsContainer"></div>
             </div>
         </div>
 
@@ -279,71 +332,142 @@
 
     <script>
         let currentFilter = '全部';
+        // 记录每把枪当前选中的方案索引
+        let activeBuildIndexMap = {};
 
         function getStorageData() {
-            const data = localStorage.getItem('delta_gun_codes');
+            const data = localStorage.getItem('delta_weapons_hub');
             return data ? JSON.parse(data) : [
                 {
-                    id: 1,
+                    name: "MK4",
                     type: "突击步枪",
-                    name: "M4A1 突击步枪",
-                    code: "M4A1-667788-PRO-DELTA",
-                    tags: ["全面战场", "长距离微后座"],
-                    desc: "装备长枪管与重型消音器，大幅提高子弹初速与衰减距离，后坐力极其平稳，适合 50 米外架枪压制。"
+                    builds: [
+                        {
+                            level: "🟢 低改 (跑刀/摸金性价比)",
+                            title: "摸金性价比版",
+                            code: "MK4-LOW-BUDGET-6688",
+                            tags: ["低造价", "腰射控枪"],
+                            desc: "保留基础枪机，加装基础握把与红点，成本极低，适合跑刀摸金打人机。"
+                        },
+                        {
+                            level: "🟣 高改 (全面战场/极致满配)",
+                            title: "三连发腰射秒人流",
+                            code: "6K5HI880EU900684DBQL5",
+                            tags: ["极致腰射", "全面战场", "爆发拉满"],
+                            desc: "极限压低腰射散布，装备高精枪管与战术握把，近战三连发瞬间蒸发甲胄。"
+                        }
+                    ]
                 },
                 {
-                    id: 2,
-                    type: "冲锋枪",
-                    name: "Vector 冲锋枪",
-                    code: "VEC-HIPFIRE-9900-MAX",
-                    tags: ["烽火地带", "腰射瞬秒", "近距离突脸"],
-                    desc: "极限堆开镜移速与腰射散布，近距离贴脸 0.2 秒瞬间蒸发敌人，适合摸金室内战。"
+                    name: "M4A1",
+                    type: "突击步枪",
+                    builds: [
+                        {
+                            level: "🟡 中改 (烽火进阶/均衡)",
+                            title: "烽火消音稳定版",
+                            code: "M4A1-667788-MID-PRO",
+                            tags: ["消音隐蔽", "中距离压制"],
+                            desc: "配置重型消音器与加长护木，兼顾隐蔽性与中远距离弹道稳定性。"
+                        },
+                        {
+                            level: "🟣 高改 (全面战场/极致满配)",
+                            title: "全面战场激光枪",
+                            code: "M4A1-DELTA-LASER-999",
+                            tags: ["零后坐", "百米架枪", "60发大弹匣"],
+                            desc: "顶配精校枪口与枪托，后坐力近乎垂直一条线，50米开外激光扫射。"
+                        }
+                    ]
                 }
             ];
         }
 
         function setStorageData(data) {
-            localStorage.setItem('delta_gun_codes', JSON.stringify(data));
+            localStorage.setItem('delta_weapons_hub', JSON.stringify(data));
         }
 
-        function renderList() {
-            const list = getStorageData();
-            const container = document.getElementById('gunList');
+        function getTabColorClass(level) {
+            if (level.includes('低改')) return 'active-low';
+            if (level.includes('中改')) return 'active-mid';
+            if (level.includes('高改')) return 'active-high';
+            return 'active-spec';
+        }
+
+        function renderWeapons() {
+            const weapons = getStorageData();
+            const container = document.getElementById('weaponCardsContainer');
             container.innerHTML = '';
 
-            const filtered = currentFilter === '全部' ? list : list.filter(item => item.type === currentFilter);
+            const filtered = currentFilter === '全部' ? weapons : weapons.filter(w => w.type === currentFilter);
 
             if (filtered.length === 0) {
-                container.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #64748b; padding: 40px 0;">暂无该类型配装方案，快去左侧录入吧！</p>`;
+                container.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #64748b; padding: 40px 0;">暂无该类型枪械方案，在左侧录入第一套方案吧！</p>`;
                 return;
             }
 
-            filtered.forEach(item => {
-                let tagsHtml = (item.tags || []).map(t => `<span class="tag-pill">🏷️ ${t.trim()}</span>`).join('');
+            filtered.forEach(weapon => {
+                if (activeBuildIndexMap[weapon.name] === undefined || activeBuildIndexMap[weapon.name] >= weapon.builds.length) {
+                    activeBuildIndexMap[weapon.name] = 0;
+                }
+                const activeIndex = activeBuildIndexMap[weapon.name];
+                const curBuild = weapon.builds[activeIndex] || weapon.builds[0];
+
+                // 生成 Tab 标签栏
+                let tabsHtml = '';
+                weapon.builds.forEach((b, idx) => {
+                    const isActive = idx === activeIndex;
+                    const activeClass = isActive ? getTabColorClass(b.level) : '';
+                    const shortLabel = b.level.split(' ')[0] + ' ' + (b.title || b.level.split(' ')[1] || `方案${idx+1}`);
+                    tabsHtml += `
+                        <button class="build-tab-btn ${activeClass}" onclick="switchBuild('${weapon.name}', ${idx})">
+                            ${shortLabel}
+                        </button>
+                    `;
+                });
+
+                // 生成当前方案的 Tag
+                let tagsHtml = (curBuild.tags || []).map(t => `<span class="meta-tag">🏷️ ${t.trim()}</span>`).join('');
 
                 container.innerHTML += `
-                    <div class="weapon-card">
-                        <div class="weapon-header">
-                            <span class="weapon-name">${item.name}</span>
-                            <span class="weapon-type-tag">${item.type}</span>
+                    <div class="weapon-hub-card">
+                        <div class="hub-header">
+                            <div class="hub-title">
+                                <span>${weapon.name}</span>
+                                <span style="font-size:13px; color:var(--text-muted); font-weight:normal;">(${weapon.builds.length}套方案)</span>
+                            </div>
+                            <span class="hub-type-tag">${weapon.type}</span>
                         </div>
 
-                        <div class="code-box">
-                            <span class="code-text" title="${item.code}">${item.code}</span>
-                            <button class="btn-copy" onclick="copyCode('${item.code}', this)">📋 复制改枪码</button>
+                        <!-- 方案切换 Tab 栏 -->
+                        <div class="build-tabs-nav">${tabsHtml}</div>
+
+                        <!-- 当前选中的方案详情 -->
+                        <div class="build-display-content">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <strong style="font-size:15px; color:white;">${curBuild.title || curBuild.level}</strong>
+                                <span style="font-size:12px; color:#818cf8; font-weight:600;">${curBuild.level}</span>
+                            </div>
+
+                            <div class="code-box">
+                                <span class="code-text" title="${curBuild.code}">${curBuild.code}</span>
+                                <button class="btn-copy" onclick="copyCode('${curBuild.code}', this)">📋 复制改枪码</button>
+                            </div>
+
+                            <div class="meta-tags-row">${tagsHtml}</div>
+                            <div class="build-desc">💡 ${curBuild.desc || '暂无详细搭配说明'}</div>
                         </div>
-
-                        <div class="tag-row">${tagsHtml}</div>
-
-                        <div class="desc-box">💡 ${item.desc || '暂无详细配件说明'}</div>
 
                         <div class="action-bar">
-                            <button class="btn-sm" onclick="editGun(${item.id})">✏️ 编辑</button>
-                            <button class="btn-sm btn-del" onclick="deleteGun(${item.id})">🗑️ 删除</button>
+                            <button class="btn-sm" onclick="editBuild('${weapon.name}', ${activeIndex})">✏️ 编辑此方案</button>
+                            <button class="btn-sm btn-del" onclick="deleteBuild('${weapon.name}', ${activeIndex})">🗑️ 删除此方案</button>
                         </div>
                     </div>
                 `;
             });
+        }
+
+        function switchBuild(weaponName, index) {
+            activeBuildIndexMap[weaponName] = index;
+            renderWeapons();
         }
 
         function filterType(type) {
@@ -351,64 +475,100 @@
             document.querySelectorAll('.btn-filter').forEach(btn => {
                 btn.classList.toggle('active', btn.innerText.includes(type));
             });
-            renderList();
+            renderWeapons();
         }
 
-        function saveGun(e) {
+        function saveGunBuild(e) {
             e.preventDefault();
-            let list = getStorageData();
-            const editingId = document.getElementById('editingId').value;
+            let weapons = getStorageData();
 
+            const editingWeaponName = document.getElementById('editingWeaponName').value;
+            const editingBuildIndex = document.getElementById('editingBuildIndex').value;
+
+            const gunType = document.getElementById('gunType').value;
+            const gunName = document.getElementById('gunName').value.trim();
+            const level = document.getElementById('buildLevel').value;
+            const title = document.getElementById('buildTitle').value.trim();
+            const code = document.getElementById('gunCode').value.trim();
             const tagsRaw = document.getElementById('gunTags').value.trim();
             const tags = tagsRaw ? tagsRaw.split(/[,，]/).filter(Boolean) : [];
+            const desc = document.getElementById('gunDesc').value.trim();
 
-            const gunData = {
-                id: editingId ? parseInt(editingId) : Date.now(),
-                type: document.getElementById('gunType').value,
-                name: document.getElementById('gunName').value.trim(),
-                code: document.getElementById('gunCode').value.trim(),
-                tags: tags,
-                desc: document.getElementById('gunDesc').value.trim()
-            };
+            const newBuild = { level, title, code, tags, desc };
 
-            if (editingId) {
-                list = list.map(g => g.id === parseInt(editingId) ? gunData : g);
-                document.getElementById('editingId').value = '';
-                document.getElementById('formTitle').innerText = '✍️ 录入新改枪方案';
-                document.getElementById('submitBtn').innerText = '⚡ 保存改枪方案';
+            if (editingWeaponName !== "") {
+                // 编辑现有方案
+                const wIdx = weapons.findIndex(w => w.name === editingWeaponName);
+                if (wIdx !== -1) {
+                    weapons[wIdx].builds[parseInt(editingBuildIndex)] = newBuild;
+                    weapons[wIdx].type = gunType;
+                }
+                resetForm();
             } else {
-                list.unshift(gunData);
+                // 新增或追加
+                const existIndex = weapons.findIndex(w => w.name.toUpperCase() === gunName.toUpperCase());
+                if (existIndex !== -1) {
+                    weapons[existIndex].builds.push(newBuild);
+                    activeBuildIndexMap[weapons[existIndex].name] = weapons[existIndex].builds.length - 1;
+                } else {
+                    weapons.unshift({
+                        name: gunName,
+                        type: gunType,
+                        builds: [newBuild]
+                    });
+                    activeBuildIndexMap[gunName] = 0;
+                }
+                document.getElementById('gunForm').reset();
             }
 
-            setStorageData(list);
-            document.getElementById('gunForm').reset();
-            renderList();
+            setStorageData(weapons);
+            renderWeapons();
         }
 
-        function editGun(id) {
-            const list = getStorageData();
-            const item = list.find(g => g.id === id);
-            if (!item) return;
+        function editBuild(weaponName, index) {
+            const weapons = getStorageData();
+            const weapon = weapons.find(w => w.name === weaponName);
+            if (!weapon || !weapon.builds[index]) return;
 
-            document.getElementById('editingId').value = item.id;
-            document.getElementById('gunType').value = item.type;
-            document.getElementById('gunName').value = item.name;
-            document.getElementById('gunCode').value = item.code;
-            document.getElementById('gunTags').value = (item.tags || []).join(', ');
-            document.getElementById('gunDesc').value = item.desc || '';
+            const b = weapon.builds[index];
+            document.getElementById('editingWeaponName').value = weaponName;
+            document.getElementById('editingBuildIndex').value = index;
 
-            document.getElementById('formTitle').innerText = '✏️ 编辑改枪方案';
-            document.getElementById('submitBtn').innerText = '✨ 保存修改';
+            document.getElementById('gunType').value = weapon.type;
+            document.getElementById('gunName').value = weapon.name;
+            document.getElementById('buildLevel').value = b.level;
+            document.getElementById('buildTitle').value = b.title || '';
+            document.getElementById('gunCode').value = b.code;
+            document.getElementById('gunTags').value = (b.tags || []).join(', ');
+            document.getElementById('gunDesc').value = b.desc || '';
+
+            document.getElementById('formTitle').innerText = `✏️ 编辑 [${weapon.name}] 的方案`;
+            document.getElementById('submitBtn').innerText = '✨ 保存修改后的方案';
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function deleteGun(id) {
-            if (confirm("确定删除这套改枪方案吗？")) {
-                let list = getStorageData();
-                list = list.filter(g => g.id !== id);
-                setStorageData(list);
-                renderList();
+        function deleteBuild(weaponName, index) {
+            if (confirm(`确定要删除 [${weaponName}] 的这套方案吗？`)) {
+                let weapons = getStorageData();
+                const wIdx = weapons.findIndex(w => w.name === weaponName);
+                if (wIdx !== -1) {
+                    weapons[wIdx].builds.splice(index, 1);
+                    if (weapons[wIdx].builds.length === 0) {
+                        weapons.splice(wIdx, 1); // 如果该枪所有方案都删除了，直接移除这把枪
+                    }
+                    setStorageData(weapons);
+                    activeBuildIndexMap[weaponName] = 0;
+                    renderWeapons();
+                }
             }
+        }
+
+        function resetForm() {
+            document.getElementById('editingWeaponName').value = '';
+            document.getElementById('editingBuildIndex').value = '';
+            document.getElementById('formTitle').innerText = '✍️ 录入 / 追加改枪方案';
+            document.getElementById('submitBtn').innerText = '⚡ 保存至枪械方案库';
+            document.getElementById('gunForm').reset();
         }
 
         function copyCode(code, btn) {
@@ -425,7 +585,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `delta_gun_codes_backup.json`;
+            a.download = `delta_weapons_hub_backup.json`;
             a.click();
         }
 
@@ -440,7 +600,7 @@
                     if (Array.isArray(imported)) {
                         setStorageData(imported);
                         alert("✅ 配装数据导入成功！");
-                        renderList();
+                        renderWeapons();
                     }
                 } catch (err) {
                     alert("❌ 文件格式错误！");
@@ -449,7 +609,7 @@
             reader.readAsText(file);
         }
 
-        renderList();
+        renderWeapons();
     </script>
 </body>
 </html>
