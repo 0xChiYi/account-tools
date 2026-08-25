@@ -77,7 +77,6 @@
             padding: 28px;
         }
 
-        /* 智能一键粘贴解析栏 */
         .smart-parse-box {
             background: rgba(99, 102, 241, 0.12);
             border: 1px solid rgba(99, 102, 241, 0.35);
@@ -88,28 +87,15 @@
             flex-direction: column;
             gap: 10px;
         }
-        .smart-input-row {
-            display: flex;
-            gap: 8px;
-        }
+        .smart-input-row { display: flex; gap: 8px; }
         .smart-input-row input {
-            flex: 1;
-            padding: 10px 12px;
-            font-size: 14px;
-            background: rgba(15, 23, 42, 0.85);
-            border-color: rgba(99, 102, 241, 0.4);
+            flex: 1; padding: 10px 12px; font-size: 14px;
+            background: rgba(15, 23, 42, 0.85); border-color: rgba(99, 102, 241, 0.4);
         }
         .btn-parse {
-            background: #6366f1;
-            border: none;
-            color: white;
-            padding: 0 16px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            white-space: nowrap;
-            transition: all 0.2s;
+            background: #6366f1; border: none; color: white; padding: 0 16px;
+            border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 600;
+            white-space: nowrap; transition: all 0.2s;
         }
         .btn-parse:hover { background: #4f46e5; }
 
@@ -151,7 +137,7 @@
 
         .weapon-cards-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(440px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(460px, 1fr));
             gap: 24px;
         }
 
@@ -176,6 +162,7 @@
             color: #c7d2fe; padding: 4px 10px; border-radius: 8px; font-weight: 600;
         }
 
+        /* 方案切换 Tab */
         .build-tabs-nav {
             display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px;
         }
@@ -183,13 +170,16 @@
             background: rgba(255, 255, 255, 0.06);
             border: 1px solid rgba(255, 255, 255, 0.1);
             color: var(--text-muted);
-            padding: 6px 14px;
+            padding: 8px 16px;
             border-radius: 10px;
             font-size: 13px;
             cursor: pointer;
             white-space: nowrap;
             transition: all 0.2s;
             font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
         .build-tab-btn:hover { background: rgba(255,255,255,0.15); color: white; }
         
@@ -198,59 +188,110 @@
         .build-tab-btn.active-high { background: rgba(168, 85, 247, 0.2); border-color: rgba(168, 85, 247, 0.5); color: #c084fc; }
         .build-tab-btn.active-spec { background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.5); color: #f87171; }
 
+        /* 方案展示容器 */
         .build-display-content {
             background: rgba(0, 0, 0, 0.35);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 14px;
-            padding: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 18px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 14px;
         }
 
-        .code-box {
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px dashed rgba(56, 189, 248, 0.4);
-            border-radius: 10px;
-            padding: 10px 14px;
+        .build-header-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 10px;
+        }
+
+        .build-title-text {
+            font-size: 17px;
+            font-weight: 700;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 级别徽章样式 */
+        .level-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .badge-low {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.25) 0%, rgba(5, 150, 105, 0.25) 100%);
+            border: 1px solid #10b981;
+            color: #34d399;
+        }
+        .badge-mid {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.25) 0%, rgba(217, 119, 6, 0.25) 100%);
+            border: 1px solid #f59e0b;
+            color: #fbbf24;
+        }
+        .badge-high {
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.25) 0%, rgba(126, 34, 206, 0.25) 100%);
+            border: 1px solid #a855f7;
+            color: #d8b4fe;
+        }
+        .badge-spec {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.25) 0%, rgba(185, 28, 28, 0.25) 100%);
+            border: 1px solid #ef4444;
+            color: #fca5a5;
+        }
+
+        .code-box {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px dashed rgba(56, 189, 248, 0.4);
+            border-radius: 12px;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
         }
 
         .code-text {
             font-family: 'Fira Code', monospace;
             color: #38bdf8;
-            font-size: 15px;
-            font-weight: 600;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
 
         .btn-copy {
-            background: rgba(56, 189, 248, 0.2);
-            border: 1px solid rgba(56, 189, 248, 0.4);
-            color: #38bdf8;
-            padding: 6px 14px;
+            background: #0284c7;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 16px;
             border-radius: 8px;
             cursor: pointer;
             font-size: 13px;
             font-weight: 600;
             white-space: nowrap;
             transition: all 0.2s;
+            box-shadow: 0 2px 6px rgba(2, 132, 199, 0.4);
         }
         .btn-copy:hover { background: #38bdf8; color: black; }
 
         .meta-tags-row { display: flex; gap: 6px; flex-wrap: wrap; }
         .meta-tag {
-            font-size: 11px; background: rgba(255, 255, 255, 0.08); color: #cbd5e1;
-            padding: 2px 8px; border-radius: 6px;
+            font-size: 12px; background: rgba(255, 255, 255, 0.08); color: #cbd5e1;
+            padding: 3px 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.06);
         }
 
         .build-desc {
-            font-size: 13px; color: #94a3b8; line-height: 1.6;
+            font-size: 13.5px; color: #cbd5e1; line-height: 1.6;
+            background: rgba(15, 23, 42, 0.4); padding: 10px 12px; border-radius: 8px;
         }
 
         .action-bar {
@@ -321,18 +362,18 @@
                     </div>
 
                     <div class="input-group">
-                        <label>改装等级 / 适用定位</label>
+                        <label>改装级别</label>
                         <select id="buildLevel" required>
-                            <option value="🟢 低改 (跑刀/摸金性价比)">🟢 低改 (跑刀/摸金性价比)</option>
-                            <option value="🟡 中改 (烽火进阶/均衡)">🟡 中改 (烽火进阶/均衡)</option>
-                            <option value="🟣 高改 (全面战场/极致满配)">🟣 高改 (全面战场/极致满配)</option>
-                            <option value="🔴 战术特化 (腰射/远距离架枪)">🔴 战术特化 (腰射/远距离架枪)</option>
+                            <option value="低改">🟢 低改</option>
+                            <option value="中改">🟡 中改</option>
+                            <option value="高改">🟣 高改</option>
+                            <option value="特化">🔴 特化</option>
                         </select>
                     </div>
 
                     <div class="input-group">
-                        <label>方案命名 (可选备注)</label>
-                        <input type="text" id="buildTitle" placeholder="例如: 烽火地带静音 / 35W腰射秒人">
+                        <label>方案定位 / 场景名称</label>
+                        <input type="text" id="buildTitle" placeholder="例如: 烽火地带 / 极限腰射 / 跑刀摸金">
                     </div>
 
                     <div class="input-group">
@@ -380,7 +421,30 @@
         let currentFilter = '全部';
         let activeBuildIndexMap = {};
 
-        // 智能解析标准分享格式: MK4冲锋枪-烽火地带-6KVE2280CDJAD6F4GCK57
+        function normalizeLevel(level) {
+            if (!level) return '中改';
+            if (level.includes('低改')) return '低改';
+            if (level.includes('中改')) return '中改';
+            if (level.includes('高改')) return '高改';
+            if (level.includes('特化')) return '特化';
+            return level;
+        }
+
+        function getLevelBadgeInfo(level) {
+            const norm = normalizeLevel(level);
+            switch (norm) {
+                case '低改':
+                    return { icon: '🟢', text: '低改', badgeClass: 'badge-low', tabClass: 'active-low' };
+                case '中改':
+                    return { icon: '🟡', text: '中改', badgeClass: 'badge-mid', tabClass: 'active-mid' };
+                case '高改':
+                    return { icon: '🟣', text: '高改', badgeClass: 'badge-high', tabClass: 'active-high' };
+                case '特化':
+                default:
+                    return { icon: '🔴', text: '特化', badgeClass: 'badge-spec', tabClass: 'active-spec' };
+            }
+        }
+
         function autoSmartParse(text) {
             text = text.trim();
             if (!text || !text.includes('-')) return;
@@ -391,7 +455,6 @@
                 let rawMode = parts[1].trim();
                 let rawCode = parts.slice(2).join('-').trim();
 
-                // 识别枪系分类并清洗枪名
                 let detectedType = "突击步枪";
                 let cleanGunName = rawGun;
 
@@ -414,26 +477,24 @@
                     detectedType = "霰弹枪/手枪";
                 }
 
-                // 识别改装等级与场景
-                let levelVal = "🟡 中改 (烽火进阶/均衡)";
-                if (rawMode.includes("烽火") || rawMode.includes("摸金")) {
-                    levelVal = "🟡 中改 (烽火进阶/均衡)";
-                } else if (rawMode.includes("全面") || rawMode.includes("高配") || rawMode.includes("顶配")) {
-                    levelVal = "🟣 高改 (全面战场/极致满配)";
-                } else if (rawMode.includes("跑刀") || rawMode.includes("低改") || rawMode.includes("性价比")) {
-                    levelVal = "🟢 低改 (跑刀/摸金性价比)";
+                let levelVal = "中改";
+                if (rawMode.includes("烽火") || rawMode.includes("中改")) {
+                    levelVal = "中改";
+                } else if (rawMode.includes("全面") || rawMode.includes("高改") || rawMode.includes("顶配")) {
+                    levelVal = "高改";
+                } else if (rawMode.includes("跑刀") || rawMode.includes("低改") || rawMode.includes("摸金")) {
+                    levelVal = "低改";
                 } else if (rawMode.includes("腰射") || rawMode.includes("特化")) {
-                    levelVal = "🔴 战术特化 (腰射/远距离架枪)";
+                    levelVal = "特化";
                 }
 
-                // 自动填入表单
                 document.getElementById('gunType').value = detectedType;
                 document.getElementById('gunName').value = cleanGunName || rawGun;
                 document.getElementById('buildLevel').value = levelVal;
                 document.getElementById('buildTitle').value = rawMode;
                 document.getElementById('gunCode').value = rawCode;
                 document.getElementById('gunTags').value = `${rawMode}, ${cleanGunName}`;
-                document.getElementById('gunDesc').value = `来自游戏一键分享：【${rawGun}】适用【${rawMode}】`;
+                document.getElementById('gunDesc').value = `来自游戏分享：【${rawGun}】适用【${rawMode}】`;
             }
         }
 
@@ -445,11 +506,18 @@
                     type: "冲锋枪",
                     builds: [
                         {
-                            level: "🟡 中改 (烽火进阶/均衡)",
+                            level: "中改",
                             title: "烽火地带",
                             code: "6KVE2280CDJAD6F4GCK57",
                             tags: ["烽火地带", "MK4", "均衡控枪"],
-                            desc: "来自游戏一键分享：【MK4冲锋枪】适用【烽火地带】"
+                            desc: "来自游戏分享：【MK4冲锋枪】适用【烽火地带】"
+                        },
+                        {
+                            level: "低改",
+                            title: "跑刀摸金",
+                            code: "MK4-LOW-BUDGET-6688",
+                            tags: ["低造价", "近距离腰射"],
+                            desc: "极限压低改装成本，适合跑刀打人机。"
                         }
                     ]
                 },
@@ -458,11 +526,11 @@
                     type: "突击步枪",
                     builds: [
                         {
-                            level: "🟣 高改 (全面战场/极致满配)",
+                            level: "高改",
                             title: "全面战场激光枪",
                             code: "M4A1-DELTA-LASER-999",
                             tags: ["零后坐", "百米架枪", "60发大弹匣"],
-                            desc: "顶配精校枪口与枪托，后坐力近乎垂直一条线，50米开外激光扫射。"
+                            desc: "顶配精校枪口与枪托，后坐力极小，适合中远距离持续架枪压制。"
                         }
                     ]
                 }
@@ -471,13 +539,6 @@
 
         function setStorageData(data) {
             localStorage.setItem('delta_weapons_hub', JSON.stringify(data));
-        }
-
-        function getTabColorClass(level) {
-            if (level.includes('低改')) return 'active-low';
-            if (level.includes('中改')) return 'active-mid';
-            if (level.includes('高改')) return 'active-high';
-            return 'active-spec';
         }
 
         function renderWeapons() {
@@ -498,15 +559,17 @@
                 }
                 const activeIndex = activeBuildIndexMap[weapon.name];
                 const curBuild = weapon.builds[activeIndex] || weapon.builds[0];
+                const activeLevelInfo = getLevelBadgeInfo(curBuild.level);
 
                 let tabsHtml = '';
                 weapon.builds.forEach((b, idx) => {
                     const isActive = idx === activeIndex;
-                    const activeClass = isActive ? getTabColorClass(b.level) : '';
-                    const shortLabel = b.level.split(' ')[0] + ' ' + (b.title || b.level.split(' ')[1] || `方案${idx+1}`);
+                    const bLevelInfo = getLevelBadgeInfo(b.level);
+                    const activeClass = isActive ? bLevelInfo.tabClass : '';
                     tabsHtml += `
                         <button class="build-tab-btn ${activeClass}" onclick="switchBuild('${weapon.name}', ${idx})">
-                            ${shortLabel}
+                            <span>${bLevelInfo.icon}</span>
+                            <span>${b.title || bLevelInfo.text}</span>
                         </button>
                     `;
                 });
@@ -518,7 +581,7 @@
                         <div class="hub-header">
                             <div class="hub-title">
                                 <span>${weapon.name}</span>
-                                <span style="font-size:13px; color:var(--text-muted); font-weight:normal;">(${weapon.builds.length}套方案)</span>
+                                <span style="font-size:13px; color:var(--text-muted); font-weight:normal;">(${weapon.builds.length} 套方案)</span>
                             </div>
                             <span class="hub-type-tag">${weapon.type}</span>
                         </div>
@@ -526,9 +589,13 @@
                         <div class="build-tabs-nav">${tabsHtml}</div>
 
                         <div class="build-display-content">
-                            <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <strong style="font-size:15px; color:white;">${curBuild.title || curBuild.level}</strong>
-                                <span style="font-size:12px; color:#818cf8; font-weight:600;">${curBuild.level}</span>
+                            <div class="build-header-row">
+                                <div class="build-title-text">
+                                    <span>${curBuild.title || activeLevelInfo.text}</span>
+                                </div>
+                                <span class="level-badge ${activeLevelInfo.badgeClass}">
+                                    ${activeLevelInfo.icon} ${activeLevelInfo.text}
+                                </span>
                             </div>
 
                             <div class="code-box">
@@ -571,7 +638,7 @@
 
             const gunType = document.getElementById('gunType').value;
             const gunName = document.getElementById('gunName').value.trim();
-            const level = document.getElementById('buildLevel').value;
+            const level = normalizeLevel(document.getElementById('buildLevel').value);
             const title = document.getElementById('buildTitle').value.trim();
             const code = document.getElementById('gunCode').value.trim();
             const tagsRaw = document.getElementById('gunTags').value.trim();
@@ -619,7 +686,7 @@
 
             document.getElementById('gunType').value = weapon.type;
             document.getElementById('gunName').value = weapon.name;
-            document.getElementById('buildLevel').value = b.level;
+            document.getElementById('buildLevel').value = normalizeLevel(b.level);
             document.getElementById('buildTitle').value = b.title || '';
             document.getElementById('gunCode').value = b.code;
             document.getElementById('gunTags').value = (b.tags || []).join(', ');
